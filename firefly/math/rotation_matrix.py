@@ -10,17 +10,18 @@ __all__ = [
 ]
 
 # -------------------------------- IMPORT ------------------------------- #
+from typing import Union
 from beartype import beartype
 import numpy as np
 from scipy.spatial.transform import Rotation
 from ..types import Float64Array3
 
 
-def rotx(theta: float) -> np.ndarray:
+def rotx(theta: Union[float, np.float64]) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the X-axis.
 
     Args:
-        theta (float): Angle in radians for the rotation.
+        theta (float, np.float64): Angle in radians for the rotation.
 
     Returns:
         np.ndarray: 3x3 rotation matrix representing the rotation around
@@ -29,11 +30,11 @@ def rotx(theta: float) -> np.ndarray:
     return __fundamentalRotation(np.array([1.0, 0, 0]), theta)
 
 
-def roty(theta: float) -> np.ndarray:
+def roty(theta: Union[float, np.float64]) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the Y-axis.
 
     Args:
-        theta (float): Angle in radians for the rotation.
+        theta (float, np.float64): Angle in radians for the rotation.
 
     Returns:
         np.ndarray: 3x3 rotation matrix representing the rotation around
@@ -42,11 +43,11 @@ def roty(theta: float) -> np.ndarray:
     return __fundamentalRotation(np.array([0, 1.0, 0]), theta)
 
 
-def rotz(theta: float) -> np.ndarray:
+def rotz(theta: Union[float, np.float64]) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the Z-axis.
 
     Args:
-        theta (float): Angle in radians for the rotation.
+        theta (float, np.float64): Angle in radians for the rotation.
 
     Returns:
         np.ndarray: 3x3 rotation matrix representing the rotation
@@ -58,13 +59,13 @@ def rotz(theta: float) -> np.ndarray:
 @beartype
 def __fundamentalRotation(
         axis: Float64Array3,
-        theta: float
+        theta: Union[float, np.float64]
         ) -> np.ndarray:
     """Create a rotation matrix based on angle and axis.
 
     Args:
         axis (Float64Array3): The rotation axis as a 3D vector.
-        theta (float): Angle in radians for the rotation.
+        theta (float, np.float64): Angle in radians for the rotation.
 
     Returns:
         np.ndarray: 3x3 rotation matrix.
