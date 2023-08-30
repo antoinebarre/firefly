@@ -1,101 +1,73 @@
 """
-firefly - Math - Basic Rotations matrix 
+firefly - Math - Basic Rotations matrix tools
 """
 
-# EXPORT
+# -------------------------------- EXPORT ------------------------------- #
 __all__ = [
     "rotx",
     "roty",
     "rotz",
-    "RotationMatrixError",
-    "skew_matrix",
 ]
 
-# IMPORT
+# -------------------------------- IMPORT ------------------------------- #
+from beartype import beartype
 import numpy as np
-import dragonfly
 from scipy.spatial.transform import Rotation
-
-# Rotation Matrix exception
-
-
-class RotationMatrixError(Exception):
-    """Exception raised when the calculation of rotation matrix is impossible
-    """
-    def __init__(self, axis: np.ndarray, angle: float) -> None:
-        self.axis = axis
-        self.angle = angle
-
-        msg = ("Impossible to calculate the rotation"
-               " matrix with the following parameters:\n"
-               f"- Vector: {axis} [type: {type(axis)}]\n"
-               f"- Angle: {angle} [type: {type(axis)}]\n")
-        self.message = msg
-
-        super().__init__(self.message)
+from ..types import Float64Array3
 
 
 def rotx(theta: float) -> np.ndarray:
-    """provide the rotational matrix of an angle of theta along the x axis
+    """Generate a rotation matrix for a rotation around the X-axis.
 
     Args:
-        theta (float): angle of rotation defined in radians
+        theta (float): Angle in radians for the rotation.
 
     Returns:
-        np.ndarray: rotational matrix [3x3]
+        np.ndarray: 3x3 rotation matrix representing the rotation around
+        the X-axis.
     """
-    return __fundamentalRotation(np.array([1, 0, 0]), theta)
+    return __fundamentalRotation(np.array([1.0, 0, 0]), theta)
 
 
 def roty(theta: float) -> np.ndarray:
-    """provide the rotational matrix of an angle of theta along the y axis
+    """Generate a rotation matrix for a rotation around the Y-axis.
 
     Args:
-        theta (float): angle of rotation defined in radians
+        theta (float): Angle in radians for the rotation.
 
     Returns:
-        np.ndarray: rotational matrix [3x3]
+        np.ndarray: 3x3 rotation matrix representing the rotation around
+        the Y-axis.
     """
-    return __fundamentalRotation(np.array([0, 1, 0]), theta)
+    return __fundamentalRotation(np.array([0, 1.0, 0]), theta)
 
 
 def rotz(theta: float) -> np.ndarray:
-    """provide the rotational matrix of an angle of theta along the z axis
+    """Generate a rotation matrix for a rotation around the Z-axis.
 
     Args:
-        theta (float): angle of rotation defined in radians
+        theta (float): Angle in radians for the rotation.
 
     Returns:
-        np.ndarray: rotational matrix [3x3]
+        np.ndarray: 3x3 rotation matrix representing the rotation
+        around the Z-axis.
     """
-    return __fundamentalRotation(np.array([0, 0, 1]), theta)
+    return __fundamentalRotation(np.array([0, 0, 1.0]), theta)
 
 
-def __fundamentalRotation(axis: np.ndarray, theta) -> np.ndarray:
-    """PRIVATE FUNCTION - create rotation matrix based on angle and axis"""
-    try:
-        theta = float(theta)
-        axis = dragonfly.utils.validation.input_check_3x1(axis)
-        return Rotation.from_rotvec(theta * axis.reshape((3,))).as_matrix().T
-    except BaseException as exc:
-        raise RotationMatrixError(axis, theta) from exc
-
-
-def skew_matrix(vect: np.ndarray) -> np.ndarray:
-    """provide the skew symetrical matric of a vector
+@beartype
+def __fundamentalRotation(
+        axis: Float64Array3,
+        theta: float
+        ) -> np.ndarray:
+    """Create a rotation matrix based on angle and axis.
 
     Args:
-        vect (np.ndarray): column vector [3x1]
+        axis (Float64Array3): The rotation axis as a 3D vector.
+        theta (float): Angle in radians for the rotation.
 
     Returns:
-        np.ndarray: skew symetrical matric of a vector
+        np.ndarray: 3x3 rotation matrix.
     """
-
-    # get input
-    vect = dragonfly.utils.validation.input_check_3x1(vect)
-
-    # create matrix
-    M = np.array([[0, -vect[2, 0], vect[1, 0]],
-                  [vect[2, 0], 0, -vect[0, 0]],
-                  [-vect[1, 0], vect[0, 0], 0]])
-    return M
+    theta = float(theta)
+    return Rotation.from_rotvec(theta * axis.reshape((3,))).as_matrix().T
