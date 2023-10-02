@@ -16,12 +16,21 @@ AVAILABLE_ELLIPSOIDS = {
         semiMajorAxis=6378137.0,
         flattening=1/298.257223563,
         j2=1.08263E-3,
+        earth_rotation_rate=72.92115E-6
         ),
     "SPHERICAL": EllipsoidParameters(
         name="SPHERICAL",
         semiMajorAxis=6378137.0,
         flattening=0.0,
         j2=0.0,
+        earth_rotation_rate=72.92115E-6
+        ),
+    "SPHERICAL_NO_ROTATION": EllipsoidParameters(
+        name="SPHERICAL",
+        semiMajorAxis=6378137.0,
+        flattening=0.0,
+        j2=0.0,
+        earth_rotation_rate=0
     )
     }
 
@@ -34,7 +43,7 @@ class EarthModel(BaseModel):
     semiMajorAxis: float
     flattening: float
     j2: float
-    earth_rotation_rate: float = 72.92115E-6  # rotation rate rad/s
+    earth_rotation_rate: float # rotation rate rad/s
     mu: float = 3.986004418E14  # m-3s-2
 
     # -------------------------- CONFIGURATION ------------------------- #
