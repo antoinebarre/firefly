@@ -10,6 +10,7 @@ class EllipsoidParameters(NamedTuple):
     semiMajorAxis: float
     flattening: float
     j2: float
+    earth_rotation_rate: float
 
 
 FloatNumber = Union[float, np.float64]

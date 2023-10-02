@@ -15,7 +15,7 @@ from firefly.settings import DEFAULT_EARTH_MODEL
 
 def gravity(
         position: Position,
-        earth_model: str = DEFAULT_EARTH_MODEL):
+        earth_model: str = DEFAULT_EARTH_MODEL)-> list[float]:
 
     # get gravitation parameter
     earth = EarthModel(earth_model)
