@@ -14,10 +14,10 @@ from typing import Union
 from beartype import beartype
 import numpy as np
 from scipy.spatial.transform import Rotation
-from ..types import Float64Array3
+from ..types import Float64Array3, FloatNumber
 
 
-def rotx(theta: Union[float, np.float64]) -> np.ndarray:
+def rotx(theta: FloatNumber) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the X-axis.
 
     Args:
@@ -30,7 +30,7 @@ def rotx(theta: Union[float, np.float64]) -> np.ndarray:
     return __fundamentalRotation(np.array([1.0, 0, 0]), theta)
 
 
-def roty(theta: Union[float, np.float64]) -> np.ndarray:
+def roty(theta: FloatNumber) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the Y-axis.
 
     Args:
@@ -43,7 +43,7 @@ def roty(theta: Union[float, np.float64]) -> np.ndarray:
     return __fundamentalRotation(np.array([0, 1.0, 0]), theta)
 
 
-def rotz(theta: Union[float, np.float64]) -> np.ndarray:
+def rotz(theta: FloatNumber) -> np.ndarray:
     """Generate a rotation matrix for a rotation around the Z-axis.
 
     Args:
@@ -59,7 +59,7 @@ def rotz(theta: Union[float, np.float64]) -> np.ndarray:
 @beartype
 def __fundamentalRotation(
         axis: Float64Array3,
-        theta: Union[float, np.float64]
+        theta: FloatNumber
         ) -> np.ndarray:
     """Create a rotation matrix based on angle and axis.
 
