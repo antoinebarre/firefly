@@ -5,7 +5,7 @@
 import pytest
 import numpy as np
 
-from firefly.geography.rotation_matrix import (dcm_eci2ecef, dcm_ecef2ned,
+from firefly.math.rotation_matrix import (dcm_eci2ecef, dcm_ecef2ned,
                                                dcm_ecef2enu, angle2dcm,
                                                dcm2angle)
 

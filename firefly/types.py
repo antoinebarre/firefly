@@ -1,6 +1,6 @@
 """ Collection of data types used by firefly package"""
 
-from typing import Annotated, NamedTuple, Union
+from typing import Annotated, NamedTuple, TypeAlias, Union
 from beartype.vale import Is
 import numpy as np
 
@@ -13,7 +13,10 @@ class EllipsoidParameters(NamedTuple):
     earth_rotation_rate: float
 
 
-FloatNumber = Union[float, np.float64]
+FloatNumber : TypeAlias = Union[
+    float,
+    np.float64,
+    ]
 
 
 Float64Array3 = Annotated[
