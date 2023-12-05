@@ -17,6 +17,7 @@ typing-inspect = "^0.9.0"
 nptyping = "^2.5.0"
 matplotlib = "^3.7.2"
 pandas = "^2.1.0"
+allantools = "^2019.9"
 
 
 [tool.poetry.group.dev.dependencies]

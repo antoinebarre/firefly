@@ -10,7 +10,6 @@ __all__ = [
 ]
 
 # -------------------------------- IMPORT ------------------------------- #
-from typing import Union
 from beartype import beartype
 import numpy as np
 from scipy.spatial.transform import Rotation
