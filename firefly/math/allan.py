@@ -23,9 +23,9 @@ import pandas as pd
 def _compute_cluster_sizes(
         n_samples: int,
         dt: float,
-        tau_min: Optional[float],
-        tau_max: Optional[float],
-        n_clusters: int
+        tau_min: Optional[float] = None,
+        tau_max: Optional[float] = None,
+        n_clusters: int = 100,
         ) -> np.ndarray:
     """
     INTERNAL FUNCTION
@@ -154,19 +154,164 @@ def allan_variance(
     return cluster_sizes * dt, avar
 
 
-def plot_allan_deviation(
+def __identify_slope(
         tau: np.ndarray,
         avar: np.ndarray,
+        ) -> np.ndarray:
+    """
+    INTERNAL FUNCTION
+    identify slope of the allan variance (or allan deviation) curve
+    """
+    # calculate log values
+    logtau = np.log10(tau)
+    logavar = np.log10(avar)
+
+    # compute slope
+    dlogavar = np.diff(logavar) / np.diff(logtau)
+
+    return dlogavar
+
+
+def identify_random_walk_coefficient(
+        tau: np.ndarray,
+        adev: np.ndarray,
+        ax: Optional[plt.Axes] = None,):
+
+    # slope of the allan deviation curve for a random walk is 0.5
+    slope = 0.5
+
+    # calculate the delta between the slope and the allan deviation curve
+    delta = np.abs(slope - __identify_slope(tau, adev))
+
+    # identify the index where the slope of the log-scaled Allan deviation is
+    # equal to the slope specified.
+    if np.min(delta) > np.abs(slope):
+        raise ValueError(("No part of The slope of the Allan deviation curve "
+                          "is equal"
+                         "to the slope specified (0.5) for a random walk. "
+                          f"min value of delta is {np.min(delta)}"))
+    else:
+        index = np.argmin(delta)
+
+        # find the y intercept of the line
+        b = np.log10(adev[index]) - slope * np.log10(tau[index])
+
+        # Determine the rate random walk coefficient from the line.
+        log_K = b + slope * np.log10(3)
+        K = 10**log_K
+
+    # add plot of the white noise identification figure
+    if ax is not None:
+        line_n = K * np.sqrt(tau / 3)
+        ax.loglog(tau, line_n, 'r--', label='Random Walk Slope')
+        ax.legend(loc='best')
+
+    # return the white noise coefficient
+    return K
+
+
+def identify_white_noise_coefficient(
+        tau: np.ndarray,
+        adev: np.ndarray,
+        ax: Optional[plt.Axes] = None,):
+    """_summary_
+
+    Args:
+        tau (np.ndarray): _description_
+        adev (np.ndarray): _description_
+        ax (Optional[plt.Axes], optional): _description_. Defaults to None.
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: _description_
+    """
+    # slope of the allan deviation curve for a whith noise is -0.5
+    slope = -0.5
+
+    # calculate the delta between the slope and the allan deviation curve
+    delta = np.abs(slope - __identify_slope(tau, adev))
+
+    # identify the index where the slope of the log-scaled Allan deviation is
+    # equal to the slope specified.
+    if np.min(delta) > np.abs(slope):
+        raise ValueError(("No part of The slope of the Allan deviation curve "
+                          "is equal"
+                         "to the slope specified (-0.5) for a white noise. "
+                          f"min value of delta is {np.min(delta)}"))
+    else:
+        index = np.argmin(delta)
+
+        # find the y intercept of the line
+        b = np.log10(adev[index]) - slope * np.log10(tau[index])
+
+        # determine the white noise coefficient
+        log_N = b + slope * np.log10(1)
+        N = 10**log_N
+
+    # add plot of the white noise identification figure
+    if ax is not None:
+        line_n = N/np.sqrt(tau)
+        ax.loglog(tau, line_n, 'r--', label='White Noise Slope')
+        ax.legend(loc='best')
+
+    # return the white noise coefficient
+    return N
+
+
+def identify_pink_noise_coefficient(
+        tau: np.ndarray,
+        adev: np.ndarray,
+        ax: Optional[plt.Axes] = None,):
+
+    # slope of the allan deviation curve for a random walk is 0.5
+    slope = 0.
+
+    # calculate the delta between the slope and the allan deviation curve
+    delta = np.abs(slope - __identify_slope(tau, adev))
+
+    # identify the index where the slope of the log-scaled Allan deviation is
+    # equal to the slope specified.
+    if np.min(delta) > np.abs(0.1):
+        raise ValueError(("No part of The slope of the Allan deviation curve "
+                          "is equal"
+                         "to the slope specified (0.) for a pink noise. "
+                          f"min value of delta is {np.min(delta)}"))
+    else:
+        index = np.argmin(delta)
+
+        # find the y intercept of the line
+        b = np.log10(adev[index]) - slope * np.log10(tau[index])
+
+        # Determine the rate random walk coefficient from the line.
+        scfB = np.sqrt(2*np.log(2) / np.pi)
+        log_B = b + slope * np.log10(scfB)
+        B = 10**log_B
+
+    # add plot of the white noise identification figure
+    if ax is not None:
+        line_b = B * scfB * np.ones(len(tau))
+        ax.loglog(tau, line_b, 'r--', label='Pink Noise Slope')
+        ax.legend(loc='best')
+
+    # return the white noise coefficient
+    return B
+
+
+def plot_allan_deviation(
+        tau: np.ndarray,
+        adev: np.ndarray,
         ax: Optional[plt.Axes] = None,
         **kwargs
         ) -> plt.Axes:
     """
-    Plot Allan deviation (AVAR) vs. averaging time.
+    Plot Allan deviation (ADEV) vs. averaging time.
 
     Args:
         tau (np.ndarray): Averaging times for which Allan variance was computed
             1-d array.
-        avar (np.ndarray): Values of AVAR. The 0-th dimension is the same
+        adev (np.ndarray): Values of ADEV. The 0-th dimension is the same
             as for `tau`. The trailing dimensions match ones for `x`.
         ax (plt.Axes, optional): Axes to plot on. If None (default), a new
             figure is created.
@@ -178,9 +323,10 @@ def plot_allan_deviation(
     # function implementation
     _, ax = plt.subplots()
 
-    ax.loglog(tau, np.sqrt(avar), **kwargs)
+    ax.loglog(tau, adev, label="Allan deviation", **kwargs)
     ax.set_xlabel(r'Averaging time $\tau$, s')
     ax.set_ylabel('Allan deviation, unit')
+    ax.legend(loc='best')
     ax.grid(True, which="both", ls="-", color='0.65')
 
     return ax

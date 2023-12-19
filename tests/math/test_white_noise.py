@@ -43,3 +43,19 @@ def test_white_noise():
     assert len(result) == npts
     assert np.mean(result) == pytest.approx(0.0, abs=ABSOLUTE_TOLERANCE)
     assert np.std(result) == pytest.approx(math.sqrt(dsp*fs), abs=ABSOLUTE_TOLERANCE)
+
+def test_white_noise_invalid_npts():
+    """
+    Test function for white_noise with invalid npts.
+
+    This function tests if white_noise raises an error when npts is invalid.
+    """
+
+    # Test case 3: Invalid npts
+    npts = 1E1000
+    dsp = 1.0
+    fs = 1.0
+    seed = None
+
+    with pytest.raises(ValueError):
+        white_noise(npts, dsp, fs, seed)
