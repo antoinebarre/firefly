@@ -18,14 +18,13 @@ import numpy as np
 from firefly.constants.earth_model import EarthModel
 from firefly.math.rotation_matrix import rotx, roty, rotz
 from firefly.settings import DEFAULT_EARTH_MODEL
-from firefly.types import Float64Matrix_3x3
+from firefly.types import Float64Matrix_3x3,FloatNumber
 
 
-@beartype
 def dcm_eci2ecef(
         dt: float,
         earth_model: str = DEFAULT_EARTH_MODEL
-        ) -> np.ndarray:
+        ) -> Float64Matrix_3x3:
     """Provide the Direct Cosine Matrix to convert Earth-centered inertial
      (ECI) to Earth-centered Earth-fixed (ECEF) coordinates
 
@@ -52,9 +51,9 @@ def dcm_eci2ecef(
 
 @beartype
 def dcm_ecef2ned(
-        latitude: Union[float, np.float64],
-        longitude: Union[float, np.float64]
-        ) -> np.ndarray:
+        latitude: FloatNumber,
+        longitude: FloatNumber
+        ) -> Float64Matrix_3x3:
     """Calculate the rotational matrix from the ECEF (Earth Centered Earth
     Fixed) to NED (North Earth Down) to transform a vector defined in ECEF
     to NED frame
@@ -103,11 +102,11 @@ def dcm_ecef2enu(
     )
 
 
-def angle2dcm(rotAngle1: Union[float, np.float64],
-              rotAngle2: Union[float, np.float64],
-              rotAngle3: Union[float, np.float64],
+def angle2dcm(rotAngle1: FloatNumber,
+              rotAngle2: FloatNumber,
+              rotAngle3: FloatNumber,
               rotationSequence: str = 'ZYX'
-              ) -> np.ndarray:
+              ) -> Float64Matrix_3x3:
     """This function converts Euler Angle into Direction Cosine Matrix (DCM).
     Args:
         rotAngle1 (float, np.float64): first angle of roation in radians
@@ -130,10 +129,11 @@ def angle2dcm(rotAngle1: Union[float, np.float64],
                " is not implemented.")
         raise NotImplementedError(msg)
 
-
 @beartype
-def dcm2angle(dcm: Float64Matrix_3x3,
-              rotationSequence: str = 'ZYX') -> tuple[float, float, float]:
+def dcm2angle(
+        dcm: Float64Matrix_3x3,
+        rotationSequence: str = 'ZYX'
+        ) -> tuple[float, float, float]:
     """This function converts a Direction Cosine Matrix (DCM) into the three
     rotation angles.
 
