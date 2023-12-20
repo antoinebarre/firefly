@@ -18,6 +18,7 @@ nptyping = "^2.5.0"
 matplotlib = "^3.7.2"
 pandas = "^2.1.0"
 allantools = "^2019.9"
+mypy = "^1.7.1"
 
 
 [tool.poetry.group.dev.dependencies]
