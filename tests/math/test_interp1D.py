@@ -137,3 +137,14 @@ def test_get_value_no_extrapolation_allowed():
     interp = Interp1D(x, y)
     with pytest.raises(ValueError):
         interp.get_value(0., allow_extrapolation=False)
+
+def test_full_range_integration():
+    """
+    Test the integrate_all method returns the correct integrated value over the full range of x.
+    """
+    x = np.linspace(0, 10, 100)
+    y = np.sin(x)
+    interp = Interp1D(x, y)
+    result = interp.integrate_all()
+    expected = 1.839  # Approximate expected value over the full range
+    np.testing.assert_almost_equal(result, expected, decimal=3)

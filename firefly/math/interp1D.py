@@ -135,6 +135,16 @@ class Interp1D:
         return np.interp(new_x, self.x, self.y, **kwargs)
 
 
+    def integrate_all(self) -> float:
+        """Integrate the interpolated function over the entire range of x.
+
+        Returns:
+            float: The integrated value.
+
+        """
+        return np.trapz(self.y, self.x)
+
+
     @staticmethod
     def benchmark():
         """Benchmark the performance of the interpolation methods.
