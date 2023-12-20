@@ -26,6 +26,16 @@ Float64Array3 = Annotated[
         ]
     ]
 
+Float641DVector = Annotated[
+    np.ndarray,
+    Is[
+        lambda array: (
+            array.ndim == 1 and
+            np.issubdtype(array.dtype, np.float64)
+            )
+        ]
+    ]
+
 Float64Matrix_3x3 = Annotated[
     np.ndarray,
     Is[
