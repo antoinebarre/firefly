@@ -100,15 +100,15 @@ class USSA76(Atmosphere):
     def __init__(self):
 
         # Define the layers and their properties: Base altitude (m),
-        # Lapse rate (K/m), and Base temperature (K)
+        # Lapse rate (K/m), and Base temperature (K), Pressure (Pa)
         self.layers = [
-            (0, -0.0065, 288.15),      # Troposphere
-            (11000, 0, 216.65),        # Lower Stratosphere
-            (20000, 0.001, 216.65),    # Middle Stratosphere
-            (32000, 0.0028, 228.65),   # Upper Stratosphere
-            (47000, 0, 270.65),        # Lower Mesosphere
-            (51000, -0.0028, 270.65),  # Middle Mesosphere
-            (71000, -0.002, 214.65)    # Upper Mesosphere
+            (0, -0.0065, 288.15,101325),      # Troposphere
+            (11000, 0, 216.65,22632.1),        # Lower Stratosphere
+            (20000, 0.001, 216.65, 5474.89),    # Middle Stratosphere
+            (32000, 0.0028, 228.65, 868.019),   # Upper Stratosphere
+            (47000, 0, 270.65,110.906),        # Lower Mesosphere
+            (51000, -0.0028, 270.65, 66.9389),  # Middle Mesosphere
+            (71000, -0.002, 214.65,3.9046)    # Upper Mesosphere
         ]
         self.R = 287.053  # Specific gas constant for dry air (J/kg.K)
         self.g0 = 9.80665 # Standard gravity (m/s^2)
@@ -140,7 +140,8 @@ class USSA76(Atmosphere):
         altitude = self.validate_altitude(altitude)
 
         layer_index = self.__get_layer(altitude)
-        base_alt, lapse_rate, base_temp = self.layers[layer_index]
+        base_alt, lapse_rate, base_temp, base_pressure = self.layers[
+            layer_index]
 
         # Calculate temperature
         temperature = base_temp + lapse_rate * (altitude - base_alt)
@@ -155,9 +156,9 @@ class USSA76(Atmosphere):
         #                (temperature / base_temp) ** \
         #                (-self.g0 / (self.R * lapse_rate))
         if lapse_rate == 0:
-            pressure = self.layers[layer_index - 1][2] * np.exp(-self.g0 / (self.R * base_temp) * (altitude - base_alt))
+            pressure = base_pressure * np.exp(-self.g0 / (self.R * base_temp) * (altitude - base_alt))
         else:
-            pressure = self.layers[layer_index - 1][2] * (temperature / base_temp) ** (-self.g0 / (self.R * lapse_rate))
+            pressure = base_pressure * (temperature / base_temp) ** (-self.g0 / (self.R * lapse_rate))
 
 
         # Calculate density
