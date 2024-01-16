@@ -148,7 +148,7 @@ class Atmosphere(ABC):
             return len(xlevels) - 1
         elif x in xlevels:
             index = np.where(xlevels==x)
-            return int(index[0])
+            return int(index[0][0])
         else:
             return int(np.searchsorted(xlevels, x, side='left')) - 1
 

@@ -2,6 +2,9 @@
 --------------   GRAVITY MODEL  --------------
 """
 
+# PYLINT rules
+# pylint: disable=C0103
+
 # EXPORT
 __all__ = [
     "gravity",

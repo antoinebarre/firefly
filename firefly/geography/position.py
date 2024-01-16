@@ -4,6 +4,9 @@ Definition of Position Class
 
 from __future__ import annotations
 
+# PYLINT rules
+# pylint: disable=C0103
+
 # EXPORT
 __all__ = [
     "Position"

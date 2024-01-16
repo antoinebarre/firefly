@@ -4,7 +4,7 @@
 
 
 # Import Module
-from firefly.geography.distance import getRange
+from firefly.geography.distance import get_range
 import pytest
 import numpy as np
 
@@ -19,7 +19,7 @@ VALUE2TEST = [
 ]
 
 
-def test_getRange():
+def test_get_range():
     """ assess range"""
 
     for sample in VALUE2TEST:
@@ -31,7 +31,7 @@ def test_getRange():
 
         range_expected = sample[2]
 
-        range_real = getRange(lat1, long1, lat2, long2, nbIter=400)
+        range_real = get_range(lat1, long1, lat2, long2, nb_iter=400)
 
         msg = f"Test Case : {sample}"
 
