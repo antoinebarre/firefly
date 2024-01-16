@@ -81,7 +81,19 @@ class Position(BaseModel):
 
     # ------------------------- PROPERTIES -------------------------
     @property
-    def norm(self):
+    def norm(self) -> float :
+        """
+        Calculate the Euclidean norm of the position vector.
+
+        Returns:
+            float: The Euclidean norm of the position vector.
+
+        Examples:
+            >>> position = Position(x=1, y=2, z=3)
+            >>> position.norm
+            3.7416573867739413
+        """
+
         return np.linalg.norm([self.x, self.y, self.z])
 
     # ----------------------------- EXPORT ----------------------------- #
