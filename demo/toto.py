@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-from firefly.geography.gravity import gravity
+from firefly.earth.gravity import gravity
 from firefly.geography.position import Position
 import numpy as np
 
