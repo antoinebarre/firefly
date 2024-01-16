@@ -3,11 +3,6 @@ Definition of Position Class
 """
 
 from __future__ import annotations
-import math
-from beartype import beartype
-
-from firefly.earth.earth_model import EarthModel
-from firefly.types import FloatNumber
 
 # EXPORT
 __all__ = [
@@ -15,9 +10,17 @@ __all__ = [
 ]
 
 # IMPORT
+import math
+from beartype import beartype
 import numpy as np
-
 from pydantic import BaseModel, ConfigDict
+
+from firefly.earth.earth_model import EarthModel
+from firefly.types import FloatNumber
+
+
+
+# IMPORT
 
 from firefly.settings import DEFAULT_EARTH_MODEL
 
@@ -38,7 +41,7 @@ class Position(BaseModel):
 
     # --------------------------- CONSTRUCTOR -------------------------- #
 
-    def __init__(self, 
+    def __init__(self,
                  x: FloatNumber,
                  y: FloatNumber,
                  z: FloatNumber):
@@ -94,11 +97,23 @@ class Position(BaseModel):
             3.7416573867739413
         """
 
-        return np.linalg.norm([self.x, self.y, self.z])
+        return float(np.linalg.norm([self.x, self.y, self.z]))
 
     # ----------------------------- EXPORT ----------------------------- #
 
     def as_numpy_vector(self) -> np.ndarray:
+        """
+        Convert the position to a NumPy array.
+
+        Returns:
+            np.ndarray: A NumPy array representing the position vector.
+
+        Examples:
+            >>> position = Position(x=1, y=2, z=3)
+            >>> position.as_numpy_vector()
+            array([1, 2, 3])
+        """
+
         return np.array([self.x, self.y, self.z])
 
     # --------------------------- LLA / ECEF --------------------------- #
@@ -184,15 +199,15 @@ class Position(BaseModel):
 
         # Fixed-point iteration with Bowring's formula
         # (typically converges within two or three iterations)
-        betaNew = math.atan2((1 - f)*math.sin(phi), math.cos(phi))
+        beta_new = math.atan2((1 - f)*math.sin(phi), math.cos(phi))
         count = 0
 
-        while beta != betaNew and count < 1000:
+        while beta != beta_new and count < 1000:
 
-            beta = betaNew
+            beta = beta_new
             phi = math.atan2(self.z + b * ep2 * math.sin(beta)**3,
                              D - a * e2 * math.cos(beta)**3)
-            betaNew = math.atan2((1 - f)*math.sin(phi),
+            beta_new = math.atan2((1 - f)*math.sin(phi),
                                  math.cos(phi))
             count += 1
 
