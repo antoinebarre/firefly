@@ -10,3 +10,4 @@ Functions:
 from .rotation_matrix import *
 from .allan import *
 from .interp1D import *
+from .array import *
