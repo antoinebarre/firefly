@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from firefly.geography.atmosphere import USSA76, CurrentAtmosphericParameters
-from firefly.geography.atmosphere import Atmosphere
+from firefly.earth.atmosphere import USSA76, CurrentAtmosphericParameters
+from firefly.earth.atmosphere import Atmosphere
 
 # ============================= TYPE DEFINITION ============================ #
 @pytest.mark.parametrize(

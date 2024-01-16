@@ -13,7 +13,7 @@ __all__ = [
 import math
 from beartype import beartype
 import numpy as np
-from firefly.constants.earth_model import EarthModel
+from firefly.earth.earth_model import EarthModel
 
 from firefly.settings import DEFAULT_EARTH_MODEL
 from firefly.types import FloatNumber

@@ -9,7 +9,7 @@ __all__ = [
 
 
 from firefly.geography.position import Position
-from firefly.constants.earth_model import EarthModel
+from firefly.earth.earth_model import EarthModel
 from firefly.settings import DEFAULT_EARTH_MODEL
 
 

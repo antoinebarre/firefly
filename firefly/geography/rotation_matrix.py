@@ -15,7 +15,7 @@ __all__ = [
 from typing import Union
 from beartype import beartype
 import numpy as np
-from firefly.constants.earth_model import EarthModel
+from firefly.earth.earth_model import EarthModel
 from firefly.math.rotation_matrix import rotx, roty, rotz
 from firefly.settings import DEFAULT_EARTH_MODEL
 from firefly.types import Float64Matrix_3x3,FloatNumber

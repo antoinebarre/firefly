@@ -3,7 +3,7 @@
 
 # MODULE IMPORT
 from firefly.geography.position import Position
-from firefly.geography.gravity import gravity
+from firefly.earth.gravity import gravity
 import numpy as np
 
 

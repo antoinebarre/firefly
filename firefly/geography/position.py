@@ -4,10 +4,9 @@ Definition of Position Class
 
 from __future__ import annotations
 import math
-from typing import Union
 from beartype import beartype
 
-from firefly.constants.earth_model import EarthModel
+from firefly.earth.earth_model import EarthModel
 from firefly.types import FloatNumber
 
 # EXPORT
