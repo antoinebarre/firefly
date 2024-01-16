@@ -12,7 +12,8 @@ EXPECTED_VALUES = [
      "b":6356752.314245179497563967,
      "e": 0.081819190842622,
      "mu":3.986005E+14,
-     "j2":1.08263E-3 # SOURCE : https://fr.wikipedia.org/wiki/WGS_84
+     "j2":1.08263E-3, # SOURCE : https://fr.wikipedia.org/wiki/WGS_84
+     "mean_radius": 6371008.7714 # source : https://en.wikipedia.org/wiki/Earth_radius
     }
 ]
 
@@ -40,14 +41,14 @@ def test_earthmodel():
                     abs = ABSOLUTE_TOLERANCE,
                     rel=RELATIVE_TOLERANCE), msg
 
-        # check Earth rotation rate
+        # check general graivtational constant
         msg = 'Inapropriate gravitational constant'
         assert model2test.mu == pytest.approx(
             model["mu"],
             abs=ABSOLUTE_TOLERANCE,
             rel=RELATIVE_TOLERANCE), msg
 
-        #check Earth rotation rate
+        #check j2 gravity
         msg = 'Inapropriate second gravitational constant'
         assert model2test.j2 == pytest.approx(
             model["j2"],
@@ -74,6 +75,11 @@ def test_earthmodel():
         # assert excentricity axis
         msg = f'Inapropriate excentricity value for {model["name"]}'
         assert model2test.e== pytest.approx(model["e"],\
+            abs=ABSOLUTE_TOLERANCE,rel=RELATIVE_TOLERANCE), msg
+
+        # assert mean radius
+        msg = f'Inapropriate mean radius value for {model["name"]}'
+        assert model2test.mean_radius== pytest.approx(model["mean_radius"],\
             abs=ABSOLUTE_TOLERANCE,rel=RELATIVE_TOLERANCE), msg
 
 

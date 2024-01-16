@@ -107,3 +107,12 @@ class EarthModel(BaseModel):
             float: Excentricity of the ellispoid (SI)
         """
         return math.sqrt((self.a**2-self.b**2)/self.a**2)
+
+    @property
+    def mean_radius(self) -> float:
+        """Mean radius of the ellispoid
+
+        Returns:
+            float: Mean radius of the ellispoid (SI)
+        """
+        return (2*self.a+self.b)/3

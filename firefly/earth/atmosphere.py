@@ -19,6 +19,7 @@ from typing import NamedTuple
 import warnings
 
 import numpy as np
+from firefly.earth.earth_model import EarthModel
 from firefly.math.array import is_strictly_monotonic_increasing
 
 from firefly.types import Float641DVector
@@ -227,7 +228,7 @@ class USSA76(Atmosphere):
     __max_altitude = 86000 # m geopotential altitude
     __gamma = 1.4 # ratio of specific heats
     __P0 = 101325.0 # Pa
-    __r_earth = 6371.088E3 # km
+    __r_earth = EarthModel("WGS84").mean_radius # km mean radius for WGS84
 
     def __init__(
         self,
