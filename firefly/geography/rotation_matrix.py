@@ -2,6 +2,9 @@
 firefly - geographic rotation matrix
 """
 
+# PYLINT rules
+# pylint: disable=C0103
+
 # EXPORT
 __all__ = [
     "dcm_eci2ecef",
@@ -68,11 +71,7 @@ def dcm_ecef2ned(
         np.ndarray: Direct Cosinus Matrix from ECEF to NED
     """
 
-    M = np.matmul(
-        roty(-(latitude + np.pi / 2)),
-        rotz(longitude)
-    )
-    return M
+    return np.matmul(roty(-(float(latitude) + np.pi / 2)), rotz(longitude))
 
 
 @beartype
@@ -124,10 +123,9 @@ def angle2dcm(rotAngle1: FloatNumber,
 
     if rotationSequence.upper() == "ZYX":
         return rotx(rotAngle3) @ roty(rotAngle2) @ rotz(rotAngle1)
-    else:
-        msg = (f"Rotation sequence {rotationSequence.upper()}"
-               " is not implemented.")
-        raise NotImplementedError(msg)
+    msg = (f"Rotation sequence {rotationSequence.upper()}"
+           " is not implemented.")
+    raise NotImplementedError(msg)
 
 @beartype
 def dcm2angle(
