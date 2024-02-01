@@ -16,7 +16,7 @@ import timeit
 from beartype import beartype
 import numpy as np
 
-from firefly.types import Float641DVector, FloatNumber
+from firefly.types import Float641DVector, FloatInt
 
 
 @dataclass
@@ -72,14 +72,14 @@ class Interp1D:
     @beartype
     def get_value(
             self,
-            new_x: FloatNumber,
+            new_x: FloatInt,
             allow_extrapolation: bool = True,
             **kwargs,
             ) -> float:
         """Get the interpolated value at x_new.
 
         Args:
-            new_x (float or np.float64): The new x value to interpolate at.
+            new_x (float or np.float64 or int): The new x value to interpolate at.
             allow_extrapolation (bool, optional): Whether to allow
             extrapolation for values outside of the x range.
                 Defaults to True.
@@ -94,13 +94,12 @@ class Interp1D:
 
         """
 
-        if not allow_extrapolation:
-            if new_x < self.x[0] or new_x > self.x[-1]:
-                raise ValueError(
-                    "Extrapolation is not allowed. "
-                    "Got values outside of the range of x.")
+        if not allow_extrapolation and (new_x < self.x[0] or new_x > self.x[-1]):
+            raise ValueError(
+                "Extrapolation is not allowed. "
+                "Got values outside of the range of x.")
 
-        return float(np.interp(new_x, self.x, self.y, **kwargs))
+        return float(np.interp(float(new_x), self.x, self.y, **kwargs))
 
     @beartype
     def get_values(
@@ -126,11 +125,10 @@ class Interp1D:
 
         """
 
-        if not allow_extrapolation:
-            if np.any(new_x < self.x[0]) or np.any(new_x > self.x[-1]):
-                raise ValueError(
-                    "Extrapolation is not allowed. "
-                    "Got values outside of the range of x.")
+        if not allow_extrapolation and (np.any(new_x < self.x[0]) or np.any(new_x > self.x[-1])):
+            raise ValueError(
+                "Extrapolation is not allowed. "
+                "Got values outside of the range of x.")
 
         return np.interp(new_x, self.x, self.y, **kwargs)
 
