@@ -10,6 +10,7 @@ from firefly.math.array import (
     is_strictly_monotonic_increasing,
     is_strictly_monotonic_decreasing,
 )
+from firefly.math.array import is_value_in_interval
 
 # Test data for is_monotonic
 @pytest.mark.parametrize("array, expected, test_id", [
@@ -98,6 +99,24 @@ def test_is_strictly_monotonic_increasing(array, expected, test_id):
 def test_is_strictly_monotonic_decreasing(array, expected, test_id):
     # Act
     result = is_strictly_monotonic_decreasing(array)
+
+    # Assert
+    assert result == expected, f"Failed {test_id}"
+
+
+
+# Test data for is_value_in_interval
+@pytest.mark.parametrize("value, interval, expected, test_id", [
+    (2.5, np.array([1, 2, 3, 4]), True, "value_within_interval"),
+    (0.5, np.array([1, 2, 3, 4]), False, "value_below_interval"),
+    (5.5, np.array([1, 2, 3, 4]), False, "value_above_interval"),
+    (2.5, np.array([4, 3, 2, 1]), True, "value_within_reversed_interval"),
+    (0.5, np.array([4, 3, 2, 1]), False, "value_below_reversed_interval"),
+    (5.5, np.array([4, 3, 2, 1]), False, "value_above_reversed_interval"),
+])
+def test_is_value_in_interval(value, interval, expected, test_id):
+    # Act
+    result = is_value_in_interval(value, interval)
 
     # Assert
     assert result == expected, f"Failed {test_id}"

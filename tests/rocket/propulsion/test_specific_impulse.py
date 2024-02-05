@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from firefly.rocket.propulsion import SpecificImpulse
+from firefly.rocket.propulsion_objects import SpecificImpulse
 
 # Constants for testing
 START_TIME = 0.0

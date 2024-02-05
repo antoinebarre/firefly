@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
-from firefly.rocket.propulsion import GenericTimedData
+from firefly.rocket.propulsion_objects import GenericTimedData
 
 # Assuming START_TIME is a constant defined in the module that needs to be imported
-from firefly.rocket.propulsion import START_TIME
+from firefly.rocket.propulsion_objects import START_TIME
 
 # Happy path tests with various realistic test values
 @pytest.mark.parametrize("test_id, times, values, expected", [

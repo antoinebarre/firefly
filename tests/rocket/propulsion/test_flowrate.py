@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from firefly.rocket.propulsion import FlowRate
+from firefly.rocket.propulsion_objects import FlowRate
 
 # Constants for testing
 START_TIME = 0.0
