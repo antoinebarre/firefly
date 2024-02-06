@@ -6,8 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 
-
-from firefly.validation import validate_float
+from firefly.validation.values import validate_float
 from firefly.math.interp1D import Interp1D
 
 # ============================ GLOBAL INTERFACE ============================ #
@@ -16,6 +15,7 @@ class SpecificImpulse(ABC):
     """
     Abstract base class representing the specific impulse of a rocket engine.
     """
+    _START_TIME = 0.0
 
     @abstractmethod
     def get_current(self, time_since_ignition: float) -> float:
@@ -29,17 +29,36 @@ class SpecificImpulse(ABC):
             float: The current specific impulse at the given time since ignition.
         """
 
-# ================================= NO ISP ================================= #
+    def _validate_time(self, time_since_ignition: float) -> float:
+        """
+        Validate the time since ignition.
 
+        Args:
+            time_since_ignition (float): The time since ignition.
+
+        Returns:
+            float: The time since ignition.
+        """
+        time_since_ignition = validate_float(time_since_ignition)
+        if time_since_ignition < self._START_TIME:
+            raise ValueError(
+                f"The time since ignition must be greater than or equal to {self._START_TIME}")
+        return time_since_ignition
+
+# ================================= NO ISP ================================= #
+@dataclass
 class NoSpecificImpulse(SpecificImpulse):
     """
-Class representing a specific impulse with no specific value, i.e. no motor
+    Class representing a specific impulse with no specific value, i.e. no motor
 
-This class inherits from the SpecificImpulse class and overrides
-the get_current method to always return 0.0.
+    This class inherits from the SpecificImpulse class and overrides
+    the get_current method to always return 0.0.
 
-"""
+    """
+    specific_impulse = 0.0
     def get_current(self, time_since_ignition: float) -> float:
+        #validate time
+        time_since_ignition = self._validate_time(time_since_ignition)
         return 0.0
 
 # ============================== CONSTANT ISP ============================== #
@@ -69,13 +88,15 @@ class ConstantSpecificImpulse(SpecificImpulse):
             None
         """
         # validation
-        specific_impulse = validate_float(specific_impulse)
+        self.specific_impulse = validate_float(specific_impulse)
 
-        # initiate object
-        self._specific_impulse = specific_impulse
+        # validate that specific impulse is non-negative
+        if self.specific_impulse < 0:
+            raise ValueError("Specific impulse must be >= 0")
 
     def get_current(self, time_since_ignition: float) -> float:
-        return self._specific_impulse
+        time_since_ignition = self._validate_time(time_since_ignition)
+        return self.specific_impulse
 
 class VariableSpecificImpulse(SpecificImpulse):
     """
@@ -111,6 +132,10 @@ class VariableSpecificImpulse(SpecificImpulse):
         if time_specific_impulse[0] != self.__START_TIME:
             raise ValueError(f"The first time value must be {self.__START_TIME} [s]")
 
+        # validate that specific impulse values are non-negative
+        if np.any(values_specific_impulse < 0):
+            raise ValueError("Specific impulse values must be >= 0")
+
     def get_current(self, time_since_ignition: float) -> float:
         """
         Returns the current specific impulse value based on the time since ignition.
@@ -129,14 +154,10 @@ class VariableSpecificImpulse(SpecificImpulse):
             ValueError: If the time_since_ignition is negative.
         """
 
-        # no need of validation, as the interp1d object will raise an error for any extrapolation
+        # validation
+        time_since_ignition = self._validate_time(time_since_ignition)
 
         return self._interp1d.get_value(
             time_since_ignition,
             allow_extrapolation=True,
         )
-
-if __name__=="__main__":
-    print("This is the specific_impulse module.")
-    a = NoSpecificImpulse()
-    b = ConstantSpecificImpulse(specific_impulse=0.0)

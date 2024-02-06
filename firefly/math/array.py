@@ -24,7 +24,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from firefly.types import Vector
-from firefly.validation import validate_float, validate_numpy_vector
+from firefly.validation.values import validate_float
+from firefly.validation.numpy import validate_numpy_vector
 
 
 # ============================= ARRAY HANDLING ============================= #

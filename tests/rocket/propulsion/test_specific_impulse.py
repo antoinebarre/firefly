@@ -1,57 +1,75 @@
-import numpy as np
 import pytest
-from firefly.rocket.propulsion_objects import SpecificImpulse
+import numpy as np
+from firefly.rocket.specific_impulse import NoSpecificImpulse, ConstantSpecificImpulse, VariableSpecificImpulse
 
-# Constants for testing
-START_TIME = 0.0
-
-# Test IDs for parametrization
-HAPPY_PATH_ID = "happy_path"
-EDGE_CASE_ID = "edge_case"
-ERROR_CASE_ID = "error_case"
-
-# Happy path test values
-happy_path_params = [
-    (np.array([0, 10, 20]), np.array([300, 310, 320]), 15, 315),
-    (np.array([0, 5]), np.array([250, 250]), 2.5, 250),
-]
-
-# Edge case test values
-edge_case_params = [
-    (np.array([0]), np.array([300]), 0, 300),
-    (np.array([0, 10]), np.array([300, 300]), 10, 300),
-]
-
-# Error case test values
-error_case_params = [
-    (np.array([0, -10]), np.array([300, 310]), 15, ValueError),
-    (np.array([0, 10]), np.array([300]), 5, ValueError),
-]
-
-@pytest.mark.parametrize("times, ISP, current_time, expected", happy_path_params, ids=[HAPPY_PATH_ID]*len(happy_path_params))
-def test_specific_impulse_happy_path(times, ISP, current_time, expected):
-    # Arrange
-    specific_impulse = SpecificImpulse(times, ISP)
-
+# ======================== NoSpecificImpulse Tests ======================== #
+@pytest.mark.parametrize("time_since_ignition, expected_output", [
+    (0, 0.0),  # ID: Test-NoISP-TimeZero
+    (1, 0.0),  # ID: Test-NoISP-PositiveTime
+    (100, 0.0),  # ID: Test-NoISP-LargePositiveTime
+])
+def test_no_specific_impulse(time_since_ignition, expected_output):
     # Act
-    result = specific_impulse.current(current_time)
+    no_isp = NoSpecificImpulse()
+    result = no_isp.get_current(time_since_ignition)
 
     # Assert
-    assert result == expected, f"Expected {expected}, got {result}"
+    assert result == expected_output, "NoSpecificImpulse should always return 0.0"
+    
+def test_negative_time_error():
+    # Assert
+    with pytest.raises(ValueError):
+        # Act
+        NoSpecificImpulse().get_current(-1)
 
-@pytest.mark.parametrize("times, ISP, current_time, expected", edge_case_params, ids=[EDGE_CASE_ID]*len(edge_case_params))
-def test_specific_impulse_edge_cases(times, ISP, current_time, expected):
+# ======================== ConstantSpecificImpulse Tests ======================== #
+@pytest.mark.parametrize("specific_impulse, time_since_ignition, expected_output", [
+    (300, 0, 300),  # ID: Test-ConstISP-TimeZero
+    (300, 1, 300),  # ID: Test-ConstISP-PositiveTime
+    (300, 100, 300),  # ID: Test-ConstISP-LargePositiveTime
+])
+def test_constant_specific_impulse(specific_impulse, time_since_ignition, expected_output):
     # Arrange
-    specific_impulse = SpecificImpulse(times, ISP)
+    const_isp = ConstantSpecificImpulse(specific_impulse=specific_impulse)
 
     # Act
-    result = specific_impulse.current(current_time)
+    result = const_isp.get_current(time_since_ignition)
 
     # Assert
-    assert result == expected, f"Expected {expected}, got {result}"
+    assert result == expected_output, "ConstantSpecificImpulse should always return the same value"
 
-@pytest.mark.parametrize("times, ISP, current_time, expected_exception", error_case_params, ids=[ERROR_CASE_ID]*len(error_case_params))
-def test_specific_impulse_error_cases(times, ISP, current_time, expected_exception):
-    # Act / Assert
-    with pytest.raises(expected_exception):
-        SpecificImpulse(times, ISP).current(current_time)
+@pytest.mark.parametrize("specific_impulse", [
+    -1,  # ID: Test-ConstISP-NegativeValue
+])
+def test_constant_specific_impulse_negative_value_error(specific_impulse):
+    # Assert
+    with pytest.raises(ValueError):
+        # Act
+        ConstantSpecificImpulse(specific_impulse=specific_impulse)
+
+# ======================== VariableSpecificImpulse Tests ======================== #
+@pytest.mark.parametrize("time_specific_impulse, values_specific_impulse, time_since_ignition, expected_output", [
+    (np.array([0, 1, 2]), np.array([300, 350, 400]), 0, 300),  # ID: Test-VarISP-TimeZero
+    (np.array([0, 1, 2]), np.array([300, 350, 400]), 1, 350),  # ID: Test-VarISP-ExactTime
+    (np.array([0, 1, 2]), np.array([300, 350, 400]), 1.5, 375),  # ID: Test-VarISP-InterpolatedTime
+    (np.array([0, 1, 2]), np.array([300, 350, 400]), 3, 400),  # ID: Test-VarISP-ExtrapolatedTime
+])
+def test_variable_specific_impulse(time_specific_impulse, values_specific_impulse, time_since_ignition, expected_output):
+    # Arrange
+    var_isp = VariableSpecificImpulse(time_specific_impulse=time_specific_impulse, values_specific_impulse=values_specific_impulse)
+
+    # Act
+    result = var_isp.get_current(time_since_ignition)
+
+    # Assert
+    assert result == expected_output, "VariableSpecificImpulse should return the correct interpolated value"
+
+@pytest.mark.parametrize("time_specific_impulse, values_specific_impulse", [
+    (np.array([-1, 1, 2]), np.array([300, 350, 400])),  # ID: Test-VarISP-InvalidStartTime
+    (np.array([0, 1, 2]), np.array([-300, 350, 400])),  # ID: Test-VarISP-NegativeISPValue
+])
+def test_variable_specific_impulse_value_error(time_specific_impulse, values_specific_impulse):
+    # Assert
+    with pytest.raises(ValueError):
+        # Act
+        VariableSpecificImpulse(time_specific_impulse=time_specific_impulse, values_specific_impulse=values_specific_impulse)

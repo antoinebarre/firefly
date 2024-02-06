@@ -18,7 +18,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from firefly.math.array import is_strictly_monotonic_increasing, is_values_in_interval, sort_arrays
-from firefly.validation import validate_bool, validate_float, validate_numpy_vector
+from firefly.validation.values import validate_bool, validate_float
+from firefly.validation.numpy import validate_numpy_vector
 
 
 @dataclass

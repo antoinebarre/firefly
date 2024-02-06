@@ -10,8 +10,7 @@ import numpy as np
 from numpy.typing import NDArray
 from firefly.math.interp1D import Interp1D
 
-from firefly.validation import validate_float
-
+from firefly.validation.values import validate_float
 
 @dataclass
 class FlowRate(ABC):
@@ -54,6 +53,16 @@ class FlowRate(ABC):
             float: The total propellant mass.
         """
 
+    @property
+    @abstractmethod
+    def max_combustion_duration(self) -> float:
+        """
+        Method to get the maximum combustion time linked to flow rate data.
+
+        Returns:
+            float: maximum combustion duration.
+        """
+
     def _validate_time(self, time_since_ignition: float) -> float:
         """
         Validate the time since ignition.
@@ -90,6 +99,34 @@ class ConstantFlowRate(FlowRate):
     flow_rate: float
     combustion_duration: float
 
+    def __init__(self, *, flow_rate: float, combustion_duration: float):
+        """Initializes a ConstantFlowRate object.
+
+        Args:
+            flow_rate (float): The constant flow rate value.
+            combustion_duration (float): The duration of combustion.
+        """
+        self.flow_rate = validate_float(flow_rate)
+        self.combustion_duration = validate_float(combustion_duration)
+
+        # validate the combustion duration is strictly greater than 0
+        if self.combustion_duration <= 0:
+            raise ValueError("The combustion duration must be greater than 0")
+
+        # validate the flow rate is sgreater than 0
+        if self.flow_rate < 0:
+            raise ValueError("The flow rate must be greater than or equal to 0")
+
+    @property
+    def max_combustion_duration(self) -> float:
+        """Returns the maximum combustion duration.
+
+        Returns:
+            float: The maximum combustion duration.
+
+        """
+        return self.combustion_duration
+
     def get_current(self, time_since_ignition: float) -> float:
         """
         Get the current flow rate at a given time since ignition.
@@ -103,7 +140,7 @@ class ConstantFlowRate(FlowRate):
         # validation
         time_since_ignition = self._validate_time(time_since_ignition)
 
-        return self.flow_rate if time_since_ignition < self.combustion_duration else 0.0
+        return self.flow_rate if time_since_ignition <= self.combustion_duration else 0.0
 
     def get_current_used_propellant_mass(self, time_since_ignition: float) -> float:
         """
@@ -170,9 +207,23 @@ class VariableFlowRate(FlowRate):
         self._interp1d = Interp1D(times_flow_rate, values_flow_rate)
         self.combustion_duration = times_flow_rate[-1]
 
+        # validate the first time value is equal to the start time
         if times_flow_rate[0] != self._START_TIME:
             raise ValueError(f"The first time value must be {self._START_TIME} [s]")
 
+        # validate the flow rate values are greater than or equal to 0
+        if np.any(values_flow_rate < 0):
+            raise ValueError("The flow rate values must be greater than or equal to 0")
+
+    @property
+    def max_combustion_duration(self) -> float:
+        """Returns the maximum combustion duration.
+
+        Returns:
+            float: The maximum combustion duration.
+
+        """
+        return self._interp1d.max_x
     def get_current(self, time_since_ignition: float) -> float:
         """Returns the current flow rate at a given time since ignition.
 
@@ -218,13 +269,3 @@ class VariableFlowRate(FlowRate):
 
         """
         return self._interp1d.integrate_all()
-
-if __name__=="__main__":
-    print("This is the flow_rate module.")
-
-    b = VariableFlowRate(
-        times_flow_rate=np.array([0.0, 10.0, 20.0]),
-        values_flow_rate=np.array([100.0, 50.0, 10.0]))
-
-    print(b.get_current(20.1))
-    print(b.get_current_used_propellant_mass(20.1))

@@ -1,119 +1,113 @@
+"""
+Module for defining the Motor class and related models.
+"""
 
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, KW_ONLY
-from typing import Optional
 
-from pydantic import BaseModel, validator
+from dataclasses import KW_ONLY
+
+from pydantic import BaseModel, Field
 from firefly.rocket.flow_rate import ConstantFlowRate, FlowRate
 from firefly.rocket.specific_impulse import ConstantSpecificImpulse, SpecificImpulse
 
 
+class MotorParameter(BaseModel):
+    """
+    Represents the parameters of a rocket motor.
 
+    Attributes:
+        time (float): The time of the motor parameter.
+        total_mass (float): The total mass of the motor parameter.
+        specific_impulse (float): The specific impulse of the motor parameter.
+        flow_rate (float): The flow rate of the motor parameter.
+        burn_time (float): The burn time of the motor parameter.
+        consummed_propellant_mass (float): The consumed propellant mass of the motor parameter.
+        nozzle_exit_area (float): The nozzle exit area of the motor parameter.
+    """
+
+    _: KW_ONLY
+    time: float = Field(ge=0)
+    total_mass: float  = Field(ge=0)
+    specific_impulse: float  = Field(ge=0)
+    flow_rate: float  = Field(ge=0)
+    burn_time: float  = Field(ge=0)
+    consummed_propellant_mass: float  = Field(ge=0)
+    nozzle_exit_area: float  = Field(ge=0)
+
+    @property
+    def vacuum_thrust(self):
+        """
+        Calculate the vacuum thrust of the motor.
+
+        Returns:
+            float: The vacuum thrust of the motor.
+        """
+        return self.specific_impulse * self.flow_rate
 
 class Motor(BaseModel):
+    """
+    Represents a rocket motor.
+
+    Attributes:
+        motor_name (str): The name of the motor.
+        nozzle_exit_area (float): The area of the nozzle exit.
+        vaccum_specific_impulse_data (SpecificImpulse): The specific impulse data in vacuum.
+        flow_rate_data (FlowRate): The flow rate data.
+        dry_mass (float): The dry mass of the motor in kilograms.
+    """
+
     _: KW_ONLY
-    motor_name: str
-    vaccum_specific_impulse: SpecificImpulse
-    flow_rate: FlowRate
-    dry_mass: float # kg
-    propellant_mass: float # kg
-    combustion_duration: float # seconds
-    time_since_ignition: float = 0.0 # seconds
+    motor_name: str = Field(default="Test Motor", validate_default=True)
+    nozzle_exit_area: float = Field(ge=0, default=0.0, validate_default=True)
+    vaccum_specific_impulse_data: SpecificImpulse
+    flow_rate_data: FlowRate
+    dry_mass: float = Field(ge=0, default=0.0, validate_default=True)# kg
 
-
-    @validator('vaccum_specific_impulse')
-    @classmethod
-    def validate_vaccum_specific_impulse(cls, v):
+    @property
+    def maximum_combustion_duration(self) -> float:
         """
-        Validate the vacuum specific impulse.
-
-        Parameters:
-        - v (SpecificImpulse): The vacuum specific impulse to validate.
+        Get the maximum combustion duration.
 
         Returns:
-        - SpecificImpulse: The validated vacuum specific impulse.
+            float: The maximum combustion duration.
 
-        Raises:
-        - TypeError: If v is not an instance of SpecificImpulse.
         """
-        if not isinstance(v, SpecificImpulse):
-            raise TypeError('vaccum_specific_impulse must be a SpecificImpulse instance')
-        # Add more validation if needed
-        return v
+        return self.flow_rate_data.max_combustion_duration
 
-    @validator('flow_rate')
-    @classmethod
-    def validate_flow_rate(cls, v):
+    def current_motor_parameter(
+        self,
+        time,
+        ) -> MotorParameter:
         """
-        Validate the flow rate.
+        Get the current motor parameter at a given time.
 
-        Parameters:
-        - v (FlowRate): The flow rate to validate.
+        Args:
+            time (float): The time at which to get the motor parameter.
 
         Returns:
-        - FlowRate: The validated flow rate.
+            MotorParameter: The current motor parameter.
 
-        Raises:
-        - TypeError: If v is not an instance of FlowRate.
         """
-        if not isinstance(v, FlowRate):
-            raise TypeError('flow_rate must be a FlowRate instance')
-        # Add more validation if needed
-        return v
+        return MotorParameter(
+            time=time,
+            total_mass=self.dry_mass,
+            specific_impulse=self.vaccum_specific_impulse_data.get_current(time),
+            flow_rate=self.flow_rate_data.get_current(time),
+            consummed_propellant_mass=self.flow_rate_data.get_current_used_propellant_mass(time),
+            burn_time=time,
+            nozzle_exit_area=self.nozzle_exit_area,
+        )
 
-#     @abstractmethod
-#     def get_propulsion_force(
-#         self,
-#         time_since_ignition: float
-#         ) -> float:
-#         """
-#         Abstract method to get the propulsion force at a given time since ignition.
-
-#         Args:
-#             time_since_ignition (float): The time since ignition.
-
-#         Returns:
-#             float: The propulsion force at the given time since ignition.
-#         """
-
-# class NoMotor(Motor):
-#     def __init__(
-#         self,
-#         *,
-#         motor_name: Optional[str] = None,
-#         dry_mass: float = 0.0,
-#         ):
-#         super().__init__(
-#             motor_name=motor_name,
-#             vaccum_specific_impulse=SpecificImpulse.create_constant_impulse(0.0, 0.0),
-#             flow_rate=FlowRate.create_constant_flow_rate(0.0,0.0),
-#             dry_mass=dry_mass,
-#             propellant_mass=0.0,
-#             combustion_duration=0.0
-#             )
-
-#     def get_propulsion_force(
-#         self,
-#         time_since_ignition: float
-#         ) -> float:
-#         return 0.0
-
-class ConcreteFlowRate(ConstantFlowRate):
-    def __init__(self, flow_rate: float, combustion_duration: float):
-        super().__init__(flow_rate, combustion_duration)
-
-    def calculate_flow(self, time_since_ignition: float) -> float:
-        # Implement the calculation logic for the flow rate
-        pass
 
 if __name__=="__main__":
     print("This is the motor module.")
 
     m1 = Motor(
         motor_name="Test Motor",
-        vaccum_specific_impulse=ConstantSpecificImpulse(specific_impulse=100.0),
-        flow_rate=ConcreteFlowRate(flow_rate=10.0, combustion_duration=100.0),
+        vaccum_specific_impulse_data=ConstantSpecificImpulse(specific_impulse=100.0),
+        flow_rate_data=ConstantFlowRate(flow_rate=10.0, combustion_duration=100.0),
         dry_mass=100.0,
-        propellant_mass=100.0,
-        combustion_duration=100.0
     )
+
+    print(m1)
+
+    print(m1.current_motor_parameter(15.0))

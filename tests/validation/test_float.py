@@ -1,4 +1,4 @@
-from firefly.validation import validate_float
+from firefly.validation.values import validate_float
 
 def test_validate_float():
     # Test valid float value
