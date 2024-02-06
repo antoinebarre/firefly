@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from firefly.rocket.specific_impulse import NoSpecificImpulse, ConstantSpecificImpulse, VariableSpecificImpulse
+from firefly.rocket.propulsion.specific_impulse import NoSpecificImpulse, ConstantSpecificImpulse, VariableSpecificImpulse
 
 # ======================== NoSpecificImpulse Tests ======================== #
 @pytest.mark.parametrize("time_since_ignition, expected_output", [

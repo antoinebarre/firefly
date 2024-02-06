@@ -6,9 +6,11 @@ This module contains classes and functions related to the flow rate of a rocket 
 
 from abc import ABC, abstractmethod
 from dataclasses import KW_ONLY, dataclass
+from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 from firefly.math.interp1D import Interp1D
+from firefly.plot.line import plot_line
 
 from firefly.validation.values import validate_float
 
@@ -17,7 +19,6 @@ class FlowRate(ABC):
     """
     Abstract base class representing the flow rate of a rocket engine.
     """
-
     _START_TIME = 0.0
 
     @abstractmethod
@@ -61,6 +62,18 @@ class FlowRate(ABC):
 
         Returns:
             float: maximum combustion duration.
+        """
+
+    @abstractmethod
+    def plot(self, file: Path) -> Path:
+        """
+        Plot the flow rate and save the plot to a file.
+
+        Args:
+            file (Path): The file path to save the plot.
+
+        Returns:
+            Path: The file path where the plot is saved.
         """
 
     def _validate_time(self, time_since_ignition: float) -> float:
@@ -168,6 +181,25 @@ class ConstantFlowRate(FlowRate):
         """
         return self.flow_rate * self.combustion_duration
 
+    def plot(self, file: Path) -> Path:
+        """
+        Plot the flow rate and save the plot to a file.
+
+        Args:
+            file (Path): The file path to save the plot.
+
+        Returns:
+            Path: The file path where the plot is saved.
+        """
+        return plot_line(
+            x_data=np.array([0, self.combustion_duration]),
+            y_data=np.array([self.flow_rate, self.flow_rate]),
+            x_label="Time [s]",
+            y_label="Flow Rate [kg/s]",
+            title="Flow Rate Over Time",
+            file=file
+        )
+
 # ============================== VARIABLE FLOW RATE ============================== #
 @dataclass
 class VariableFlowRate(FlowRate):
@@ -269,3 +301,22 @@ class VariableFlowRate(FlowRate):
 
         """
         return self._interp1d.integrate_all()
+
+    def plot(self, file: Path) -> Path:
+        """Plot the flow rate and save the plot to a file.
+
+        Args:
+            file (Path): The file path to save the plot.
+
+        Returns:
+            Path: The file path where the plot is saved.
+
+        """
+        return plot_line(
+                    x_data=self._interp1d.x,
+                    y_data=self._interp1d.y,
+                    x_label="Time [s]",
+                    y_label="Flow Rate [kg/s]",
+                    title="Flow Rate Over Time",
+                    file=file
+                )

@@ -3,8 +3,10 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
+from firefly.plot.line import plot_line
 
 from firefly.validation.values import validate_float
 from firefly.math.interp1D import Interp1D
@@ -16,6 +18,7 @@ class SpecificImpulse(ABC):
     Abstract base class representing the specific impulse of a rocket engine.
     """
     _START_TIME = 0.0
+    _DEFAULT_COMBUSTION_TIME = 100.0 # seconds - used fpr plotting
 
     @abstractmethod
     def get_current(self, time_since_ignition: float) -> float:
@@ -45,6 +48,18 @@ class SpecificImpulse(ABC):
                 f"The time since ignition must be greater than or equal to {self._START_TIME}")
         return time_since_ignition
 
+    @abstractmethod
+    def plot(self, file: Path) -> Path:
+        """
+        Plot the specific impulse and save the plot to a file.
+
+        Args:
+            file (Path): The file path to save the plot.
+
+        Returns:
+            Path: The file path where the plot is saved.
+        """
+
 # ================================= NO ISP ================================= #
 @dataclass
 class NoSpecificImpulse(SpecificImpulse):
@@ -56,10 +71,30 @@ class NoSpecificImpulse(SpecificImpulse):
 
     """
     specific_impulse = 0.0
+
     def get_current(self, time_since_ignition: float) -> float:
         #validate time
         time_since_ignition = self._validate_time(time_since_ignition)
         return 0.0
+
+    def plot(self, file: Path) -> Path:
+        """
+        Plot the specific impulse over time.
+
+        Args:
+            file (Path): The file path to save the plot.
+
+        Returns:
+            Path: The file path where the plot is saved.
+        """
+        return plot_line(
+            x_data=np.array([0., self._DEFAULT_COMBUSTION_TIME]),
+            y_data=np.array([0., 0.]),
+            x_label="Combustion Time [s]",
+            y_label="Specific Impulse [s]",
+            title="Specific Impulse",
+            file=file
+        )
 
 # ============================== CONSTANT ISP ============================== #
 @dataclass
@@ -97,6 +132,25 @@ class ConstantSpecificImpulse(SpecificImpulse):
     def get_current(self, time_since_ignition: float) -> float:
         time_since_ignition = self._validate_time(time_since_ignition)
         return self.specific_impulse
+
+    def plot(self,file:Path) -> Path:
+        """
+        Plot the specific impulse over time.
+
+        Parameters:
+        - file (Path): The file path to save the plot.
+
+        Returns:
+        - None
+        """
+        return plot_line(
+            x_data=np.array([0.,self._DEFAULT_COMBUSTION_TIME]),
+            y_data=np.array([self.specific_impulse,self.specific_impulse]),
+            x_label="Combustion Time [s]",
+            y_label="Specific Impulse [s]",
+            title="Specific Impulse",
+            file=file
+        )
 
 class VariableSpecificImpulse(SpecificImpulse):
     """
@@ -161,3 +215,23 @@ class VariableSpecificImpulse(SpecificImpulse):
             time_since_ignition,
             allow_extrapolation=True,
         )
+
+    def plot(self,file:Path) -> Path:
+        return plot_line(
+            x_data=self._interp1d.x,
+            y_data=self._interp1d.y,
+            x_label="Combustion Time [s]",
+            y_label="Specific Impulse [s]",
+            title="Specific Impulse",
+            file=file
+        )
+
+if __name__=="__main__":
+    isp = ConstantSpecificImpulse(specific_impulse=200.)
+    isp.plot(Path('test.png'))
+    
+    isp = VariableSpecificImpulse(
+        time_specific_impulse=np.array([0., 100., 200.]),
+        values_specific_impulse=np.array([200., 150., 100.])
+    )
+    isp.plot(Path('test2.png'))

@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from firefly.rocket.flow_rate import ConstantFlowRate, VariableFlowRate
+from firefly.rocket.propulsion.flow_rate import ConstantFlowRate, VariableFlowRate
 
 # ============================== CONSTANT FLOW RATE TESTS ============================== #
 

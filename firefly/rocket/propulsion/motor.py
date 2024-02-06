@@ -6,8 +6,8 @@ Module for defining the Motor class and related models.
 from dataclasses import KW_ONLY
 
 from pydantic import BaseModel, Field
-from firefly.rocket.flow_rate import ConstantFlowRate, FlowRate
-from firefly.rocket.specific_impulse import ConstantSpecificImpulse, SpecificImpulse
+from firefly.rocket.propulsion.flow_rate import ConstantFlowRate, FlowRate
+from firefly.rocket.propulsion.specific_impulse import ConstantSpecificImpulse, SpecificImpulse
 
 
 class MotorParameter(BaseModel):

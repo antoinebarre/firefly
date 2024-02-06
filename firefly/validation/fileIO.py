@@ -28,26 +28,40 @@ def validate_path(file_path: Path) -> Path:
         ) from e
 
 
-def validate_existing_file(file_path: Path) -> Path:
+def increment_file_name(file_path: Path) -> Path:
     """
-    Validates the existence of a file at the given file path.
+    Increment the file name of the given file path if the file already exists.
 
     Args:
-        file_path (Path): The path to the file.
+        file_path (Path): The file path to increment.
 
     Returns:
-        Path: The validated file path.
-
-    Raises:
-        FileNotFoundError: If the file does not exist.
+        Path: The incremented file path.
     """
     # validate path
     file_path = validate_path(file_path)
 
-    if not file_path.is_file():
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-    return file_path
+    # check if file exists
+    if not file_path.exists():
+        return file_path
 
+    # extract file name and extension
+    file_name = file_path.stem
+    file_extension = file_path.suffix
+    file_directory = file_path.parent
+
+    # initialize incremented file path
+    increment = 1
+
+    while True :
+        # increment file name
+        new_file_name = f"{file_name}_{increment}"
+        new_file_path = file_directory / (new_file_name + file_extension)
+
+        if not new_file_path.exists():
+            return new_file_path
+
+        increment += 1
 
 def validate_existing_directory(dir_path: Path) -> Path:
     """
