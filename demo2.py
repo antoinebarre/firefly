@@ -1,8 +1,19 @@
-import numpy as np
-import firefly.rocket.propulsion.flow_rate as flow_rate
+import matplotlib.pyplot as plt
 
-a = flow_rate.VariableFlowRate(
-    times_flow_rate=np.array([0.0, 10.0, 20.0]), values_flow_rate=np.array([100.0, 50.0, 10.0]))
+class PlotStorage:
+    def __init__(self):
+        self.plot = None
 
-print(a.get_current(5))
-print(a.get_current_used_propellant_mass(5))
+    def create_plot(self):
+        fig, ax = plt.subplots()
+        ax.plot([1, 2, 3], [4, 5, 6])
+        self.plot = fig
+
+# Create an instance of the class and create a plot
+storage = PlotStorage()
+storage.create_plot()
+
+# The plot is now stored in the `plot` property of the `storage` instance
+print(type(storage.plot))
+
+storage.plot.savefig("plot.png")

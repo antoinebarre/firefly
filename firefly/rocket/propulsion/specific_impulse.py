@@ -7,13 +7,14 @@ from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
 from firefly.plot.line import plot_line
+from firefly.rocket.elements import BasicElement
 
 from firefly.validation.values import validate_float
 from firefly.math.interp1D import Interp1D
 
 # ============================ GLOBAL INTERFACE ============================ #
 @dataclass
-class SpecificImpulse(ABC):
+class SpecificImpulse(BasicElement,ABC):
     """
     Abstract base class representing the specific impulse of a rocket engine.
     """
@@ -59,6 +60,9 @@ class SpecificImpulse(ABC):
         Returns:
             Path: The file path where the plot is saved.
         """
+    
+    def publish(self) -> str:
+        return "Published information"
 
 # ================================= NO ISP ================================= #
 @dataclass

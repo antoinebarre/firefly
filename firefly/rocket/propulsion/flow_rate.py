@@ -11,11 +11,12 @@ import numpy as np
 from numpy.typing import NDArray
 from firefly.math.interp1D import Interp1D
 from firefly.plot.line import plot_line
+from firefly.rocket.elements import BasicElement
 
 from firefly.validation.values import validate_float
 
 @dataclass
-class FlowRate(ABC):
+class FlowRate(BasicElement, ABC):
     """
     Abstract base class representing the flow rate of a rocket engine.
     """
@@ -91,6 +92,9 @@ class FlowRate(ABC):
             raise ValueError(
                 f"The time since ignition must be greater than or equal to {self._START_TIME}")
         return time_since_ignition
+    
+    def publish(self) -> str:
+        return "Published information"
 
 
 @dataclass
