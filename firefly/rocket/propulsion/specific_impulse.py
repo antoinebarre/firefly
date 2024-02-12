@@ -2,10 +2,11 @@
 
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import KW_ONLY, dataclass
 from pathlib import Path
 import numpy as np
 from numpy.typing import NDArray
+from pydantic import BaseModel, Field
 from firefly.plot.line import plot_line
 from firefly.rocket.elements import BasicElement
 
@@ -60,49 +61,13 @@ class SpecificImpulse(BasicElement,ABC):
         Returns:
             Path: The file path where the plot is saved.
         """
-    
+
     def publish(self) -> str:
         return "Published information"
 
-# ================================= NO ISP ================================= #
-@dataclass
-class NoSpecificImpulse(SpecificImpulse):
-    """
-    Class representing a specific impulse with no specific value, i.e. no motor
 
-    This class inherits from the SpecificImpulse class and overrides
-    the get_current method to always return 0.0.
-
-    """
-    specific_impulse = 0.0
-
-    def get_current(self, time_since_ignition: float) -> float:
-        #validate time
-        time_since_ignition = self._validate_time(time_since_ignition)
-        return 0.0
-
-    def plot(self, file: Path) -> Path:
-        """
-        Plot the specific impulse over time.
-
-        Args:
-            file (Path): The file path to save the plot.
-
-        Returns:
-            Path: The file path where the plot is saved.
-        """
-        return plot_line(
-            x_data=np.array([0., self._DEFAULT_COMBUSTION_TIME]),
-            y_data=np.array([0., 0.]),
-            x_label="Combustion Time [s]",
-            y_label="Specific Impulse [s]",
-            title="Specific Impulse",
-            file=file
-        )
-
-# ============================== CONSTANT ISP ============================== #
-@dataclass
-class ConstantSpecificImpulse(SpecificImpulse):
+# ============================== CONSTANT ISP ============================== #cl
+class ConstantSpecificImpulse(BaseModel,SpecificImpulse):
     """
     Class representing a constant specific impulse at all times.
 
@@ -115,23 +80,9 @@ class ConstantSpecificImpulse(SpecificImpulse):
     Returns:
         float: The constant specific impulse value.
     """
-
-    def __init__(self, *, specific_impulse: float):
-        """
-        Initialize the ConstantSpecificImpulse instance.
-
-        Args:
-            specific_impulse (float): The constant specific impulse value.
-
-        Returns:
-            None
-        """
-        # validation
-        self.specific_impulse = validate_float(specific_impulse)
-
-        # validate that specific impulse is non-negative
-        if self.specific_impulse < 0:
-            raise ValueError("Specific impulse must be >= 0")
+    specific_impulse: float = Field(
+        gt=0,
+        description="The specific impulse in seconds.")
 
     def get_current(self, time_since_ignition: float) -> float:
         time_since_ignition = self._validate_time(time_since_ignition)
@@ -176,7 +127,7 @@ class VariableSpecificImpulse(SpecificImpulse):
         ValueError: If the time_since_ignition is less than the start time (ie. 0.O).
 
     """
-    __START_TIME = 0.0
+    __START_TIME: float = 0.0
 
     def __init__(self,
                  *,
@@ -231,11 +182,4 @@ class VariableSpecificImpulse(SpecificImpulse):
         )
 
 if __name__=="__main__":
-    isp = ConstantSpecificImpulse(specific_impulse=200.)
-    isp.plot(Path('test.png'))
-    
-    isp = VariableSpecificImpulse(
-        time_specific_impulse=np.array([0., 100., 200.]),
-        values_specific_impulse=np.array([200., 150., 100.])
-    )
-    isp.plot(Path('test2.png'))
+    isp = ConstantSpecificImpulse(specific_impulse=250)

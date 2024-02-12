@@ -1,10 +1,6 @@
 
 
 from abc import ABC, abstractmethod
-from dataclasses import KW_ONLY, dataclass
-from typing import Optional
-
-from firefly.rocket.guidance import GuidanceLaw
 
 
 class BasicElement(ABC):
@@ -20,6 +16,19 @@ class BasicElement(ABC):
             str: The published element.
         """
 
+class RocketElement(BasicElement):
+    """
+    Represents a rocket element.
+    """
+
+    @abstractmethod
+    def initial_mass(self) -> float:
+        """
+        Returns the initial mass of the element.
+
+        Returns:
+            float: The initial mass of the element.
+        """
 
 # @dataclass
 # class RocketStage():

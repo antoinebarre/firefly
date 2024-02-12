@@ -92,7 +92,7 @@ class FlowRate(BasicElement, ABC):
             raise ValueError(
                 f"The time since ignition must be greater than or equal to {self._START_TIME}")
         return time_since_ignition
-    
+
     def publish(self) -> str:
         return "Published information"
 

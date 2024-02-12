@@ -1,26 +1,7 @@
 import pytest
 import numpy as np
-from firefly.rocket.propulsion.specific_impulse import NoSpecificImpulse, ConstantSpecificImpulse, VariableSpecificImpulse
+from firefly.rocket.propulsion.specific_impulse import ConstantSpecificImpulse, VariableSpecificImpulse
 
-# ======================== NoSpecificImpulse Tests ======================== #
-@pytest.mark.parametrize("time_since_ignition, expected_output", [
-    (0, 0.0),  # ID: Test-NoISP-TimeZero
-    (1, 0.0),  # ID: Test-NoISP-PositiveTime
-    (100, 0.0),  # ID: Test-NoISP-LargePositiveTime
-])
-def test_no_specific_impulse(time_since_ignition, expected_output):
-    # Act
-    no_isp = NoSpecificImpulse()
-    result = no_isp.get_current(time_since_ignition)
-
-    # Assert
-    assert result == expected_output, "NoSpecificImpulse should always return 0.0"
-    
-def test_negative_time_error():
-    # Assert
-    with pytest.raises(ValueError):
-        # Act
-        NoSpecificImpulse().get_current(-1)
 
 # ======================== ConstantSpecificImpulse Tests ======================== #
 @pytest.mark.parametrize("specific_impulse, time_since_ignition, expected_output", [
