@@ -7,3 +7,4 @@ __version__ = '0.0.1'
 from .math import *
 from .geography import *
 from .constants import *
+from .validation import *

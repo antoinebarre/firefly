@@ -25,6 +25,8 @@ class EllipsoidParameters(NamedTuple):
 
 FloatNumber = Union[float, np.float64]
 
+FloatInt = Union[float, int, np.float64, np.int64]
+
 FloatVector = Union[np.ndarray, list]
 
 

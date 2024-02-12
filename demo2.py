@@ -1,6 +1,19 @@
-from firefly.earth.earth_model import EarthModel
+import matplotlib.pyplot as plt
 
-earth = EarthModel()
+class PlotStorage:
+    def __init__(self):
+        self.plot = None
 
-print((earth.a+earth.b)/2)
-print(earth.mean_radius)
+    def create_plot(self):
+        fig, ax = plt.subplots()
+        ax.plot([1, 2, 3], [4, 5, 6])
+        self.plot = fig
+
+# Create an instance of the class and create a plot
+storage = PlotStorage()
+storage.create_plot()
+
+# The plot is now stored in the `plot` property of the `storage` instance
+print(type(storage.plot))
+
+storage.plot.savefig("plot.png")
