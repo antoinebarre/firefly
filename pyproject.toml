@@ -21,6 +21,7 @@ allantools = "^2019.9"
 mypy = "^1.7.1"
 markdown = "^3.5.2"
 dash = "^2.15.0"
+attrs = "^23.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

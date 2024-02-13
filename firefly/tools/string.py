@@ -2,6 +2,7 @@
 
 import random
 import string
+import textwrap
 import time
 
 from firefly.validation.int import validate_positive_integer
@@ -32,3 +33,21 @@ def add_unique_suffix(str2modify: str) -> str:
     """
     perf_counter = str(time.perf_counter()).replace('.', '')
     return f"{str2modify}_{perf_counter}"
+
+def indent(
+    text:str,
+    amount:int,
+    ch: str =' '):
+    """
+    Indents the given text by the specified amount using the specified character.
+
+    Args:
+        text (str): The text to be indented.
+        amount (int): The number of times the character should be repeated for
+            each indentation level.
+        ch (str, optional): The character used for indentation. Defaults to a space (' ').
+
+    Returns:
+        str: The indented text.
+    """
+    return textwrap.indent(text, amount * ch)

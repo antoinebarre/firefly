@@ -49,25 +49,3 @@ def validate_bool(
     if not isinstance(value, bool):
         raise TypeError(f"value must be a boolean. Got {value} - {type(value)}")
     return value
-
-# ================================= STRING ================================= #
-
-def validate_string(
-    value: Any,
-) -> str:
-    """
-    Validate that the value is a string.
-
-    Args:
-        value (Any): The value to validate.
-
-    Returns:
-        str: The validated value.
-
-    Raises:
-        TypeError: If the value is not a string.
-
-    """
-    if not isinstance(value, str):
-        raise TypeError(f"value must be a string. Got {value} - {type(value)}")
-    return value
