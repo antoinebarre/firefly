@@ -1,19 +1,29 @@
-import matplotlib.pyplot as plt
+"""Create an html Pages based on FyreFly components."""
 
-class PlotStorage:
-    def __init__(self):
-        self.plot = None
 
-    def create_plot(self):
-        fig, ax = plt.subplots()
-        ax.plot([1, 2, 3], [4, 5, 6])
-        self.plot = fig
+from firefly.html.components import Div
 
-# Create an instance of the class and create a plot
-storage = PlotStorage()
-storage.create_plot()
+from firefly.html.components import TextParagraph
 
-# The plot is now stored in the `plot` property of the `storage` instance
-print(type(storage.plot))
+from firefly.html import HTMLDocument
+from firefly.html.components import h
 
-storage.plot.savefig("plot.png")
+print(TextParagraph("Hello, World!",{"style":"sco"}).render())
+
+a = Div(
+    TextParagraph("Hello, World!"),
+    TextParagraph("Hello, World!"))
+
+b = Div(
+    TextParagraph("Hello, World!"),
+    TextParagraph("Hello, World!"))
+
+h1 = h(level=1, title="Title Hello, World!")
+
+md = HTMLDocument()
+
+md.add_component(h1)
+md.add_component(a)
+md.add_component(b)
+
+print(md.get_html_content())
