@@ -2,70 +2,58 @@
 
 from typing import Optional
 import attrs
-from pydantic import BaseModel, field_validator
 
+from .css_style import CSS_Style
 from .components import HTMLObject
 
+__all__ = ["HTMLOptions", "HTMLTag"]
 
-# List of allowed keys for the options dictionary
-ALLOWED_KEYS = ["id", "class", "style"]
-
-class TagOptions(HTMLObject,BaseModel):
+@attrs.define
+class HTMLOptions(HTMLObject):
     """Class to represent the options of an HTML tag."""
+    id: Optional[str] = attrs.field(
+        default=None,
+        metadata={'description': 'The id of the HTML tag'},
+        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+        kw_only=True)
+    class_: Optional[str] = attrs.field(
+        default=None,
+        metadata={'description': 'The class of the HTML'},
+        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+        kw_only=True)
+    style: Optional[CSS_Style] = attrs.field(
+        default=None,
+        metadata={'description': 'The style of the HTML tag.'},
+        validator=attrs.validators.optional(attrs.validators.instance_of(CSS_Style)),
+        kw_only=True)
 
-    options: Optional[dict[str,str]] = None
-
-    @field_validator("options")
-    @classmethod
-    def validate_options(cls, v : Optional[dict[str,str]] = None):
+    @staticmethod
+    def _rename_attribute(attribute_name: str) -> str:
         """
-        Validates the options dictionary.
+        Rename the attribute name to match the HTML tag option name.
 
         Args:
-            v (Optional[dict[str,str]]): The options dictionary to validate.
+            attribute_name (str): The attribute name.
 
         Returns:
-            Optional[dict[str,str]]: The validated options dictionary.
-
-        Raises:
-            ValueError: If any key in the dictionary is not in the list of allowed keys.
+            str: The renamed attribute name.
         """
-        if v is None:
-            return v
-        if any(key not in ALLOWED_KEYS for key in v.keys()):
-            raise ValueError(
-                "Dictionary keys must be in the list of allowed keys. " +
-                f"Got: {v}. " +
-                f"Allowed: {ALLOWED_KEYS}")
-        return v
-
-    def __init__(
-        self, options: Optional[dict[str,str]] = None,
-        ):
-        """
-        Initializes a TagOptions object.
-
-        Args:
-            options (Optional[dict[str,str]]): The options dictionary.
-            **kwargs: Additional keyword arguments.
-        """
-        super(TagOptions, self).__init__(options=options)
-
-    def __str__(self) -> str:
-        """
-        Returns a string representation of the TagOptions object.
-
-        Returns:
-            str: The string representation of the TagOptions object.
-        """
-        value = ""
-        if self.options:
-            for key, val in self.options.items():
-                value += f' {key}="{val}"'
-        return value
+        if attribute_name == "class_":
+            return "class"
+        return attribute_name.replace('_', '-')
 
     def render(self):
-        return str(self)
+        option_components = []
+        for field in attrs.fields(self.__class__):
+            option_name = field.name
+            # Convert field name to HTML Tag option name
+            option_name_html = self._rename_attribute(option_name)
+            if attribute_value := getattr(self, option_name):
+                if isinstance(attribute_value, HTMLObject):
+                    attribute_value = attribute_value.render()
+                option_components.append(f' {option_name_html}="{attribute_value}"')
+        return ''.join(option_components)
+
 
 @attrs.define
 class HTMLTag():
@@ -83,10 +71,10 @@ class HTMLTag():
             attrs.validators.min_len(1)],
         metadata={'description': 'The HTML tag name'},
         kw_only=False)
-    options: Optional[TagOptions] = attrs.field(
+    options: Optional[HTMLOptions] = attrs.field(
         default=None,
         metadata={'description': 'The HTML tag options'},
-        validator=attrs.validators.optional(attrs.validators.instance_of(TagOptions)),
+        validator=attrs.validators.optional(attrs.validators.instance_of(HTMLOptions)),
         kw_only=True)
 
     def create_prefix_tag(self) -> str:

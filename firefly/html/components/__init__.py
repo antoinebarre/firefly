@@ -5,3 +5,5 @@ from .generic_component import *  # pylint: disable=import-error
 from .paragraph import *
 from .div import *
 from .heading import *
+from .span import *
+from .html_tag import *

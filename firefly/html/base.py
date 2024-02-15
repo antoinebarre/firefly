@@ -1,4 +1,4 @@
-
+"""Collections of Classes and Functions to work with HTML documents."""
 
 from pathlib import Path
 from typing import Protocol
@@ -10,7 +10,7 @@ from firefly.validation.fileIO import validate_file_extension
 
 from .components import AdditionalFile
 
-__all__ = ["HTMLDocument"]
+__all__ = ["HTMLDocument","HTMLComponent"]
 
 # allowed file extensions
 ALLOWED_HTML_EXTENSIONS = ['.html', '.htm']
@@ -91,7 +91,7 @@ class HTMLDocument:
         """
         return "".join(component.render() for component in self.components)
 
-    def publish(self, htlm_file_path: Path):
+    def publish(self, htlm_file_path: Path, exist_ok: bool = False):
         """
         Publishes the HTML content to the specified file path.
 
@@ -107,7 +107,7 @@ class HTMLDocument:
             extension=ALLOWED_HTML_EXTENSIONS)
 
         # validate non existing file
-        if htlm_file_path.exists():
+        if htlm_file_path.exists() and not exist_ok:
             raise FileExistsError(f"The file {htlm_file_path} already exists.")
 
         # create target directory
@@ -145,7 +145,6 @@ class HTMLDocument:
 # #         validator=attrs.validators.deep_iterable(
 # #             member_validator=attrs.validators.instance_of(AdditionalFile)),
 # #         kw_only=True)
-    
 # #     def render(self) -> str:
 # #         html = f"""<!DOCTYPE html>
 # # <html>
@@ -158,5 +157,3 @@ class HTMLDocument:
 # #             html += component.render()
 # #         html += """</body>
 # # </html>"""
-
-

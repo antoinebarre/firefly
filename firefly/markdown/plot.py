@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from firefly.markdown.elements import MarkdownContent, MarkdownElement
-from firefly.tools.string import add_unique_suffix
+from firefly.tools.strings import add_unique_suffix
 
 
 class PlotMarkdown(MarkdownElement, BaseModel):

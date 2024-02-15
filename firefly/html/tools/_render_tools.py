@@ -1,5 +1,5 @@
 
-from firefly.tools.string import indent
+from firefly.tools.strings import indent
 from firefly.validation.string import validate_string
 
 __all__ = ["create_block"]
@@ -34,6 +34,6 @@ def create_block(*,
     suffix_tag = close_suffix
 
     if inline:
-        return f"\n{prefix_tag}{content}{suffix_tag}\n"
+        return f"{prefix_tag}{content}{suffix_tag}"
 
     return f"\n{prefix_tag}\n{indent(content,indentation_size)}\n{suffix_tag}\n"

@@ -1,9 +1,8 @@
-
+"""Basic classes for HTML components."""
 
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
 
 import attrs
 
@@ -12,6 +11,15 @@ __all__ = ["AdditionalFile", "HTMLObject", "HTMLComponent"]
 
 @attrs.define
 class AdditionalFile():
+    """
+    Represents an additional file to be included in an HTML report.
+
+    Attributes:
+        original_path (Path): The original path of the file.
+        published_directory (str): The directory where the file will be published
+            within the HTML report.
+    """
+
     original_path: Path = attrs.field(
         validator=attrs.validators.instance_of(Path),
         metadata={'description': 'Original path of the file'},
@@ -77,18 +85,6 @@ class HTMLObject(ABC):
             str: The rendered HTML.
         """
 
-    # @staticmethod
-    # def _validate_non_empty_string(
-    #     instance: Any,  # pylint: disable=unused-argument
-    #     attribute: attrs.Attribute,  # pylint: disable=unused-argument
-    #     value: str):
-    #     value = validate_string(value, empty_allowed=False)
-    #     if "<" in value or ">" in value:
-    #         raise ValueError(
-    #             "HTML Tag Value cannot contain '<' or '>' characters." +
-    #             f"Got: {value}")
-    #     return value
-
 class HTMLComponent(HTMLObject, ABC):
     """
     Represents an HTML component.
@@ -118,4 +114,3 @@ class HTMLComponent(HTMLObject, ABC):
             list[AdditionalFile]: A list of additional files published.
 
         """
-        
