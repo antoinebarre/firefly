@@ -1,7 +1,7 @@
 """Collection of function and class for HTML Paragraph"""
 
 
-from typing import Optional
+from typing import Iterable, Optional
 import attrs
 
 from .generic_component import HTMLGenericComponent # pylint: disable=import-error
@@ -9,15 +9,14 @@ from .components import AdditionalFile, HTMLComponent
 from .html_tag import HTMLOptions, HTMLTag
 
 
-__all__ = ["TextParagraph", "AdvancedParagraph"]
-
+__all__ = ["Text", "Paragraph", "Basic"]
 
 @attrs.define
-class Text(HTMLComponent):
+class Basic(HTMLComponent):
     """
-    Represents a text HTML component.
+    Represents a basic paragraph component without any formating or balise.
 
-    Args:
+    Attributes:
         text (str): The text to be rendered.
     """
 
@@ -29,42 +28,19 @@ class Text(HTMLComponent):
         kw_only=False)
 
     def render(self) -> str:
-        """
-        Renders the text HTML component.
-
-        Returns:
-            str: The rendered HTML string.
-        """
         return self.text
 
     def get_additional_files(self) -> list[AdditionalFile]:
-        # Nothing to publish
         return []
 
-def TextParagraph(  # pylint: disable=invalid-name
-    text: str,
-    *,
-    options: Optional[HTMLOptions] = None,
-    ) -> HTMLGenericComponent:
-    """
-    Create a paragraph component with the given text and options.
+def Text(  # pylint: disable=invalid-name
+    *children: HTMLComponent | str,
+    ) -> Basic:
+    components = validate_HTML_children(children)
+    return Basic("".join([component.render() for component in components]))
 
-    Args:
-        text (str): The text content of the paragraph.
-        options (Optional[dict[str,str]]): Optional dictionary of tag options.
 
-    Returns:
-        HTMLGenericComponent: The paragraph component.
-
-    """
-    tag = HTMLTag(
-        tag_name="p",
-        options=options)
-    return HTMLGenericComponent(
-        tag=tag,
-        contents=[Text(text)])
-
-def AdvancedParagraph(  # pylint: disable=invalid-name
+def Paragraph(  # pylint: disable=invalid-name
     *children: HTMLComponent | str,
     options: Optional[HTMLOptions] = None) -> HTMLGenericComponent:
     """
@@ -78,7 +54,7 @@ def AdvancedParagraph(  # pylint: disable=invalid-name
     Returns:
         HTMLGenericComponent: The advanced paragraph component.
     """
-    components = [Text(child) if isinstance(child, str) else child for child in children]
+    components = validate_HTML_children(children)
 
     tag = HTMLTag(
         tag_name="p",
@@ -86,3 +62,31 @@ def AdvancedParagraph(  # pylint: disable=invalid-name
     return HTMLGenericComponent(
         tag=tag,
         contents=components)
+
+
+def validate_HTML_children(children: list | tuple) -> list[HTMLComponent]: # pylint: disable=invalid-name
+    """
+    Validate the children of an HTML component.
+    childre shall be a iterable of HTMLComponent or str.
+
+    Args:
+        children (list or tuple): The children to validate.
+
+    Returns:
+        list[HTMLComponent]: The validated children.
+
+    Raises:
+        TypeError: If any child is not an instance of HTMLComponent or str.
+    """
+    if not all(isinstance(child, (HTMLComponent, str)) for child in children):
+
+        # detect the first invalid child
+        for child in children:
+            if not isinstance(child, (HTMLComponent, str)):
+                raise TypeError("All children must be instances of HTMLComponent or str" +
+                                f"Got Invalid input: {child}, type: {type(child)}, Position: {children.index(child)}")
+        raise TypeError()
+
+    return [
+        Basic(child) if isinstance(child, str) else child for child in children
+    ]

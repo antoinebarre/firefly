@@ -4,6 +4,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+
 import attrs
 
 __all__ = ["AdditionalFile", "HTMLObject", "HTMLComponent"]

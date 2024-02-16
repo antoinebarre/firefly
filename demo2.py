@@ -1,16 +1,17 @@
 """Create an html Pages based on FyreFly components."""
 
 
-from firefly.html.components import Div, AdvancedParagraph
+from firefly.html.components import Div
 
-from firefly.html.components import TextParagraph
+
 
 from firefly.html import HTMLDocument
 from firefly.html.components import h
 from firefly.html.components.css_style import CSS_Style
 from firefly.html.components.html_tag import HTMLOptions
-from firefly.html.components.paragraph import Text
+from firefly.html.components.paragraph import Paragraph, Text
 from firefly.html.components.span import Span
+from firefly.html.components.lists import HTMLList, OrderedList, UnorderedList
 
 opt = HTMLOptions(
     id="mydiv",
@@ -25,20 +26,21 @@ opt2 = HTMLOptions(
         font_size="40px",
         font_weight="bold",
         font_style="italic"
-    )
+    ),
+    type_="A"
 )
 
-print(TextParagraph("Hello, World!",options=opt).render())
+print(Paragraph("Hello, World!",options=opt).render())
 
 a = Div(
-    TextParagraph("Hello, World!"),
-    TextParagraph("Hello, World!"))
+    Paragraph("Hello, World!"),
+    Paragraph("Hello, World!"))
 
 b = Div(
-    TextParagraph("Hello, World!"),
-    TextParagraph("Hello, World!"))
+    Paragraph("Hello, World!"),
+    Paragraph("Hello, World!"))
 
-c = AdvancedParagraph(
+c = Paragraph(
     "Hello, World!", Span(
         "Hello, World! POUET POUET", options=opt2),
     options=opt
@@ -46,12 +48,33 @@ c = AdvancedParagraph(
 
 h1 = h(level=1, title="Title Hello, World!")
 
+l = UnorderedList(
+    "Hello, World!",
+    "Hello, World!",
+    "Hello, World!",
+    options=opt
+    )
+
+l2 = UnorderedList(
+    "titi",
+    Text("toto:",l),
+    "dflkdlfkdlfk",
+    "dlsfjldsfjk")
+
+l3 = OrderedList(
+    "Hello, World!1",
+    "Hello, World!2",
+    "Hello, World!3",
+    options=HTMLOptions(type_="A"))
+
 md = HTMLDocument()
 
 md.add_component(h1)
 md.add_component(a)
 md.add_component(b)
 md.add_component(c)
+md.add_component(l2)
+md.add_component(l3)
 
 print(md.get_html_content())
 

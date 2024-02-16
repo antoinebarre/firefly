@@ -36,4 +36,4 @@ def create_block(*,
     if inline:
         return f"{prefix_tag}{content}{suffix_tag}"
 
-    return f"\n{prefix_tag}\n{indent(content,indentation_size)}\n{suffix_tag}\n"
+    return f"{prefix_tag}\n{indent(content,indentation_size)}\n{suffix_tag}\n"

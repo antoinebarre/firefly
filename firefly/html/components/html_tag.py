@@ -27,6 +27,12 @@ class HTMLOptions(HTMLObject):
         validator=attrs.validators.optional(attrs.validators.instance_of(CSS_Style)),
         kw_only=True)
 
+    type_: Optional[str] = attrs.field(
+        default=None,
+        metadata={'description': 'The type of the HTML tag used only for list items'},
+        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+        kw_only=True)
+
     @staticmethod
     def _rename_attribute(attribute_name: str) -> str:
         """
@@ -38,8 +44,9 @@ class HTMLOptions(HTMLObject):
         Returns:
             str: The renamed attribute name.
         """
-        if attribute_name == "class_":
-            return "class"
+        # remove the underscore if it is the last character
+        if attribute_name[-1] == "_":
+            attribute_name = attribute_name[:-1]
         return attribute_name.replace('_', '-')
 
     def render(self):
