@@ -9,7 +9,7 @@ from .html_tag import HTMLTag, HTMLOptions
 __all__ = ["Span"]
 
 
-def Span(
+def Span(  # pylint: disable=invalid-name
     content: str,
     *,
     options: Optional[HTMLOptions] = None) -> HTMLGenericComponent:

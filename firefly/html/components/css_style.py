@@ -5,7 +5,18 @@ import attrs
 from .components import HTMLObject
 
 @attrs.define
-class CSS_Style(HTMLObject):
+class CSS_Style(HTMLObject):  # pylint: disable=too-few-public-methods, invalid-name
+    """
+    Represents the CSS style for an HTML object.
+
+    Attributes:
+        color (Optional[str]): The color of the text.
+        font_family (Optional[str]): The font family of the text.
+        font_size (Optional[str]): The font size of the text.
+        font_weight (Optional[str]): The font weight of the text.
+        font_style (Optional[str]): The font style of the text.
+    """
+
     color: Optional[str] = attrs.field(
         default=None,
         metadata={'description': 'The color of the text.'},
@@ -34,6 +45,12 @@ class CSS_Style(HTMLObject):
 
 
     def render(self):
+        """
+        Renders the CSS style as a string.
+
+        Returns:
+            str: The CSS style string.
+        """
         style_components = []
         for field in attrs.fields(self.__class__):
             attribute_name: str = field.name
