@@ -33,6 +33,14 @@ class AdditionalFile():
             'description': 'Directory where the file will be published within the HTML report'
             },
         kw_only=True)
+    published_filename: str = attrs.field(
+        validator=[
+            attrs.validators.instance_of(str),
+            attrs.validators.min_len(1)],
+        metadata={
+            'description': 'The name of the file within the HTML report'
+            },
+        kw_only=True)
 
     def get_original_path(self) -> Path:
         """
