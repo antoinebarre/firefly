@@ -77,8 +77,8 @@ l3 = OrderedList(
 
 table = Table(columns=[
     TableColumn("Name", ["John", "Doe", "Foo"]),
-    TableColumn("Age", ["25", "30", "40"]),
-    TableColumn("Country", ["USA", "Canada", "France"])])
+    TableColumn("Age", ["25", "30", "40"],alignment="right"),
+    TableColumn("Country", ["USA", "Canada", "France"],alignment="left")])
 
 
 md = HTMLDocument()
