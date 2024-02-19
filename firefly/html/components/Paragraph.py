@@ -1,7 +1,7 @@
 """Collection of function and class for HTML Paragraph"""
 
 
-from typing import Iterable, Optional
+from typing import Optional
 import attrs
 
 from .generic_component import HTMLGenericComponent # pylint: disable=import-error
@@ -35,7 +35,17 @@ class Basic(HTMLComponent):
 
 def Text(  # pylint: disable=invalid-name
     *children: HTMLComponent | str,
-    ) -> Basic:
+) -> Basic:
+    """
+    Create a text component with the given children.
+
+    Args:
+        *children: The children components or strings to be included in the text.
+
+    Returns:
+        A Basic component representing the text.
+
+    """
     components = validate_HTML_children(children)
     return Basic("".join([component.render() for component in components]))
 
@@ -84,7 +94,8 @@ def validate_HTML_children(children: list | tuple) -> list[HTMLComponent]: # pyl
         for child in children:
             if not isinstance(child, (HTMLComponent, str)):
                 raise TypeError("All children must be instances of HTMLComponent or str" +
-                                f"Got Invalid input: {child}, type: {type(child)}, Position: {children.index(child)}")
+                                f"Got Invalid input: {child}, type: {type(child)}" +
+                                f", Position: {children.index(child)}")
         raise TypeError()
 
     return [

@@ -2,7 +2,7 @@
 
 import attrs
 
-from firefly.html.tools import create_block
+from ._render_tools import create_block
 
 from .components import AdditionalFile, HTMLComponent
 from .html_tag import HTMLTag

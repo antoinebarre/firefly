@@ -1,8 +1,11 @@
 
-from firefly.html import HTMLOptions
+from firefly.html.components.tables import Table, TableColumn
 
-opt = HTMLOptions(
-    id="mydiv",
-    class_="mydiv")
+# Create a table with 3 columns
+table = Table(columns=[
+    TableColumn("Name", ["John", "Doe", "Foo"]),
+    TableColumn("Age", ["25", "30", "40"]),
+    TableColumn("Country", ["USA", "Canada", "France"])
+])
 
-print(opt.render())  # <div id="mydiv" class="mydiv"></div>
+print(table.render())

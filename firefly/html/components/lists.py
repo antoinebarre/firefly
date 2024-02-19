@@ -4,7 +4,7 @@
 from typing import Optional
 import attrs
 
-from firefly.html.tools import create_block
+from ._render_tools import create_block
 from .paragraph import validate_HTML_children
 
 from .components import AdditionalFile, HTMLComponent

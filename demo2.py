@@ -12,6 +12,7 @@ from firefly.html.components.html_tag import HTMLOptions
 from firefly.html.components.paragraph import Paragraph, Text
 from firefly.html.components.span import Span
 from firefly.html.components.lists import HTMLList, OrderedList, UnorderedList
+from firefly.html.components.tables import Table, TableColumn
 
 opt = HTMLOptions(
     id="mydiv",
@@ -67,6 +68,12 @@ l3 = OrderedList(
     "Hello, World!3",
     options=HTMLOptions(type_="A"))
 
+table = Table(columns=[
+    TableColumn("Name", ["John", "Doe", "Foo"]),
+    TableColumn("Age", ["25", "30", "40"]),
+    TableColumn("Country", ["USA", "Canada", "France"])])
+
+
 md = HTMLDocument()
 
 md.add_component(h1)
@@ -75,6 +82,7 @@ md.add_component(b)
 md.add_component(c)
 md.add_component(l2)
 md.add_component(l3)
+md.add_component(table)
 
 print(md.get_html_content())
 
