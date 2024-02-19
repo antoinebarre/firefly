@@ -6,6 +6,7 @@ from firefly.tools.strings import add_unique_suffix
 from .components import AdditionalFile
 from .components import HTMLComponent
 
+__all__ = ["Image"]
 
 @attrs.define
 class Image(HTMLComponent):  # pylint: disable=invalid-name

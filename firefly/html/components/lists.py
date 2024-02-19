@@ -21,7 +21,8 @@ class ListOptions(HTMLOptions):
     type_: Optional[Literal["A", "a", "I", "i", "1"]] = attrs.field(
         default=None, # type: ignore
         metadata={'description': 'The type of the HTML tag used only for list items'},
-        validator=attrs.validators.in_(["A", "a", "I", "i", "1"]),
+        validator=attrs.validators.optional(
+            attrs.validators.in_(["A", "a", "I", "i", "1"])),
         kw_only=True)
 
 @attrs.define

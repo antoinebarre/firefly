@@ -110,6 +110,7 @@ class HTMLComponent(HTMLObject, ABC):
         publish_additional_files: Publishes additional files required by the HTML component.
         render: Renders the HTML component.
     """
+    _indent_value: int = 4
 
     @abstractmethod
     def get_additional_files(self) -> list[AdditionalFile]:

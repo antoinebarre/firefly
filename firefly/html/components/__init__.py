@@ -8,4 +8,5 @@ from .heading import *
 from .span import *
 from .html_tag import *
 from .lists import *
+from .images import *
 

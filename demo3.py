@@ -1,6 +1,7 @@
 
 from pathlib import Path
 from firefly.html.components.css_style import CSS_Style
+from firefly.html.components.link import Link
 from firefly.html.components.lists import ListOptions, OrderedList, UnorderedList
 from firefly.html.components.span import Span, SpanOptions
 from firefly.tools.images import create_random_png
@@ -60,3 +61,11 @@ im = Image(
 )
 
 print(im.render())
+
+# test link
+lk = Link(
+    "Click me!",
+    link="http://www.google.com",
+)
+
+print(lk.render())
