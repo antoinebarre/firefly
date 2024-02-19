@@ -1,7 +1,7 @@
 """Collection of list components."""
 
 
-from typing import Optional
+from typing import Literal, Optional
 import attrs
 
 from ._render_tools import create_block
@@ -11,7 +11,18 @@ from .components import AdditionalFile, HTMLComponent
 from .html_tag import HTMLOptions, HTMLTag
 
 
-__all__ = ["OrderedList", "UnorderedList"]
+__all__ = ["OrderedList", "UnorderedList", "ListOptions"]
+
+@attrs.define
+class ListOptions(HTMLOptions):
+    """
+    Represents the options for a list HTML element.
+    """
+    type_: Optional[Literal["A", "a", "I", "i", "1"]] = attrs.field(
+        default=None, # type: ignore
+        metadata={'description': 'The type of the HTML tag used only for list items'},
+        validator=attrs.validators.in_(["A", "a", "I", "i", "1"]),
+        kw_only=True)
 
 @attrs.define
 class HTMLList(HTMLComponent):
@@ -24,7 +35,6 @@ class HTMLList(HTMLComponent):
         options (Optional[HTMLOptions]): The options of the list.
         indentation (int): The indentation size for the content.
     """
-
     contents: list[HTMLComponent] = attrs.field(
         metadata={'description': 'List of HTML components to be rendered'},
         validator=attrs.validators.deep_iterable(
@@ -35,10 +45,10 @@ class HTMLList(HTMLComponent):
         metadata={'description': 'Whether the list is ordered or not'},
         validator=attrs.validators.instance_of(bool), # type: ignore
         kw_only=True),
-    options: Optional[HTMLOptions] = attrs.field(
+    options: Optional[ListOptions] = attrs.field(
         default=None,
         metadata={'description': 'The options of the list'},
-        validator=attrs.validators.optional(attrs.validators.instance_of(HTMLOptions)),
+        validator=attrs.validators.optional(attrs.validators.instance_of(ListOptions)),
         kw_only=True)
     indentation: int = attrs.field(
         metadata={'description': 'The indentation size for the content'},
@@ -106,14 +116,14 @@ class HTMLList(HTMLComponent):
 
 def OrderedList(  # pylint: disable=invalid-name
     *items: HTMLComponent | str,
-    options: Optional[HTMLOptions] = None) -> HTMLList:
+    options: Optional[ListOptions] = None) -> HTMLList:
     """
     Create an ordered list with the given items.
 
     Args:
         *items: The items to be included in the ordered list. Each item can be an
             HTMLComponent or a string.
-        options: Optional HTMLOptions to customize the appearance of the ordered list.
+        options: Optional ListOptions to customize the appearance of the ordered list.
 
     Returns:
         HTMLList: The created ordered list.
@@ -129,7 +139,7 @@ def OrderedList(  # pylint: disable=invalid-name
 
 def UnorderedList( # pylint: disable=invalid-name
     *items: HTMLComponent | str,
-    options: Optional[HTMLOptions] = None) -> HTMLList:
+    options: Optional[ListOptions] = None) -> HTMLList:
     """
     Create an unordered list with the given items.
 

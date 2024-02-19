@@ -10,8 +10,8 @@ from firefly.html.components import h
 from firefly.html.components.css_style import CSS_Style
 from firefly.html.components.html_tag import HTMLOptions
 from firefly.html.components.paragraph import Paragraph, Text
-from firefly.html.components.span import Span
-from firefly.html.components.lists import HTMLList, OrderedList, UnorderedList
+from firefly.html.components.span import Span, SpanOptions
+from firefly.html.components.lists import HTMLList, ListOptions, OrderedList, UnorderedList
 from firefly.html.components.tables import Table, TableColumn
 
 opt = HTMLOptions(
@@ -21,14 +21,21 @@ opt = HTMLOptions(
 opt2 = HTMLOptions(
     id="mydiv",
     class_="mydiv",
+)
+
+opt_span = SpanOptions(
     style=CSS_Style(
         color="red",
         font_family="Arial",
         font_size="40px",
         font_weight="bold",
         font_style="italic"
-    ),
-    type_="A"
+    ))
+
+opt_list = ListOptions(
+    id="mydiv",
+    class_="mydiv",
+    type_="a",
 )
 
 print(Paragraph("Hello, World!",options=opt).render())
@@ -43,7 +50,7 @@ b = Div(
 
 c = Paragraph(
     "Hello, World!", Span(
-        "Hello, World! POUET POUET", options=opt2),
+        "Hello, World! POUET POUET", options=opt_span),
     options=opt
     )
 
@@ -53,7 +60,7 @@ l = UnorderedList(
     "Hello, World!",
     "Hello, World!",
     "Hello, World!",
-    options=opt
+    options=opt_list
     )
 
 l2 = UnorderedList(
@@ -66,7 +73,7 @@ l3 = OrderedList(
     "Hello, World!1",
     "Hello, World!2",
     "Hello, World!3",
-    options=HTMLOptions(type_="A"))
+    options=ListOptions(type_="A"))
 
 table = Table(columns=[
     TableColumn("Name", ["John", "Doe", "Foo"]),

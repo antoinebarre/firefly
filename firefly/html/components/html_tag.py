@@ -2,8 +2,6 @@
 
 from typing import Optional
 import attrs
-
-from .css_style import CSS_Style
 from .components import HTMLObject
 
 __all__ = ["HTMLOptions", "HTMLTag"]
@@ -18,20 +16,22 @@ class HTMLOptions(HTMLObject):
         kw_only=True)
     class_: Optional[str] = attrs.field(
         default=None,
-        metadata={'description': 'The class of the HTML'},
+        metadata={'description':
+            'The class of the HTML for CSS styling. Use class_ to avoid'+
+            ' conflict with the reserved keyword class.'},
         validator=attrs.validators.optional(attrs.validators.instance_of(str)),
         kw_only=True)
-    style: Optional[CSS_Style] = attrs.field(
-        default=None,
-        metadata={'description': 'The style of the HTML tag.'},
-        validator=attrs.validators.optional(attrs.validators.instance_of(CSS_Style)),
-        kw_only=True)
+    # style: Optional[CSS_Style] = attrs.field(
+    #     default=None,
+    #     metadata={'description': 'The style of the HTML tag.'},
+    #     validator=attrs.validators.optional(attrs.validators.instance_of(CSS_Style)),
+    #     kw_only=True)
 
-    type_: Optional[str] = attrs.field(
-        default=None,
-        metadata={'description': 'The type of the HTML tag used only for list items'},
-        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
-        kw_only=True)
+    # type_: Optional[str] = attrs.field(
+    #     default=None,
+    #     metadata={'description': 'The type of the HTML tag used only for list items'},
+    #     validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+    #     kw_only=True)
 
     @staticmethod
     def _rename_attribute(attribute_name: str) -> str:
