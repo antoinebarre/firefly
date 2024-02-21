@@ -10,12 +10,14 @@ class CSS_Style(HTMLObject):  # pylint: disable=too-few-public-methods, invalid-
     Represents the CSS style for an HTML object.
 
     Attributes:
-        color (Optional[str]): The color of the text.
+        color (Optional[str]): The color of the text following CSS rules.
         font_family (Optional[str]): The font family of the text.
         font_size (Optional[str]): The font size of the text.
         font_weight (Optional[str]): The font weight of the text.
         font_style (Optional[str]): The font style of the text.
     """
+
+    #TODO : add background color
 
     color: Optional[str] = attrs.field(
         default=None,

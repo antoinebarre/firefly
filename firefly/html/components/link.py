@@ -1,5 +1,4 @@
-
-
+"""Contains the LinkComponent class and the Link function."""
 
 from typing import Literal, Optional
 import attrs

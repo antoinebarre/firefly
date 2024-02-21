@@ -9,6 +9,7 @@ from firefly.html.components.paragraph import validate_HTML_children
 from firefly.tools.strings import indent
 from ._render_tools import create_block
 
+# TODO : change to attrs and add validators
 
 @dataclass
 class Article(HTMLComponent):

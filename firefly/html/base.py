@@ -56,7 +56,6 @@ class HTMLDocument:
             specified file path.
     """
 
-    
     components: list[HTMLComponent] = attrs.field(
         default=[],
         metadata={'description': 'List of HTML components to be rendered'},
