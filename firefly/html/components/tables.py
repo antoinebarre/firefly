@@ -233,13 +233,28 @@ class Table(HTMLComponent):
         # create header of the table
         headers = _extract_headers(self.columns)
         header_row = _create_HTML_table_row(headers, balise="th")
+        
+        header_row = create_block(
+            open_prefix="<thead>",
+            close_suffix="</thead>",
+            content=header_row,
+            inline=False,
+            indentation_size=self._indent_value
+        )
 
         # create the body of the table
         body_rows = []
         for idx in range(self.columns[0].length()):
             elements = _extract_specific_elements(self.columns, idx)
             body_rows.append(_create_HTML_table_row(elements))
-        body = "".join(body_rows)
+
+        body = create_block(
+            open_prefix="<tbody>",
+            close_suffix="</tbody>",
+            content="\n".join(body_rows),
+            inline=False,
+            indentation_size=self._indent_value
+        )
 
         return create_block(
             open_prefix=f"<table{class_attr}{width_attr}>",

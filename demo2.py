@@ -91,8 +91,16 @@ md.add_component(l2)
 md.add_component(l3)
 md.add_component(table)
 
-print(md.get_html_content())
+print(md.get_html())
+
+
+
+from firefly.html.components.title import myCSSStyleSheet, HTMLHeader
+
+print(myCSSStyleSheet())
+
+md.add_header(HTMLHeader(css=myCSSStyleSheet()))
 
 from pathlib import Path
 
-md.publish(Path("index.html"), exist_ok=True)
+md.publish(Path("work/toto/index.html"), exist_ok=False)

@@ -1,14 +1,17 @@
 """Collections of Classes and Functions to work with HTML documents."""
 
+
 from pathlib import Path
 from typing import Protocol
 
 import attrs
-from firefly.tools.files import copy_file
 
+from firefly.tools.files import copy_file
 from firefly.validation.fileIO import validate_file_extension
 
 from .components import AdditionalFile
+from .components._render_tools import create_block
+from .components.title import  HTMLHeader
 
 __all__ = ["HTMLDocument","HTMLComponent"]
 
@@ -45,28 +48,36 @@ class HTMLDocument:
     Represents an HTML document.
 
     Attributes:
-        components (list[HTMLComponent]): List of HTML components to be rendered.
-        additional_files (list[AdditionalFile]): List of additional files to be published.
+        _header (HTMLHeader): The header of the HTML document.
+        _components (list[HTMLComponent]): List of HTML components to be rendered.
+        _additional_files (list[AdditionalFile]): List of additional files to be published.
 
-    Methods:
-        add_component(component: HTMLComponent) -> None: Adds a component to the list o
-            components and updates the additional files.
-        get_html_content() -> str: Returns the HTML content of the document.
-        publish(htlm_file_path: Path) -> None: Publishes the HTML content to the
-            specified file path.
+    Public Methods:
+        add_component(component: HTMLComponent) -> None: Adds a component to the list
+        of components and updates the additional files.
+        add_header(header: HTMLHeader) -> None: Adds a header to the document.
+        get_body_html_content() -> str: Returns the HTML content of the document's body.
+        get_html() -> str: Returns the HTML content of the document.
+        publish(htlm_file_path: Path, exist_ok: bool = False) -> None: Publishes the HTML
+        content to the specified file path.
     """
-
-    components: list[HTMLComponent] = attrs.field(
-        default=[],
+    _header : HTMLHeader = attrs.field(
+        default=None,
+        metadata={'description': 'The header of the HTML document'},
+        validator=attrs.validators.optional(
+            attrs.validators.instance_of(HTMLHeader)),
+        kw_only=True)
+    _components: list[HTMLComponent] = attrs.field(
+        default=[], # type: ignore
         metadata={'description': 'List of HTML components to be rendered'},
         validator=attrs.validators.deep_iterable(
             member_validator=attrs.validators.instance_of(HTMLComponent)), # type: ignore
         kw_only=True)
-    additional_files: list[AdditionalFile] = attrs.field(
+    _additional_files: list[AdditionalFile] = attrs.field(
         default=[],
         metadata={'description': 'List of additional files to be published'},
         validator=attrs.validators.deep_iterable(
-            member_validator=attrs.validators.instance_of(AdditionalFile)), # type: ignore
+            member_validator=attrs.validators.instance_of(AdditionalFile)),
         kw_only=True)
 
     def add_component(self, component: HTMLComponent):
@@ -79,17 +90,49 @@ class HTMLDocument:
         Returns:
             None
         """
-        self.components.append(component)
-        self.additional_files.extend(component.get_additional_files())
+        self._components.append(component)
+        self._additional_files.extend(component.get_additional_files())
 
-    def get_html_content(self) -> str:
+    def add_header(self, header: HTMLHeader):
+        """
+        Adds a header to the document.
+
+        Args:
+            header (HTMLHeader): The header to be added.
+
+        Returns:
+            None
+        """
+        self._header = header
+        self._additional_files.extend(header.get_additional_files())
+
+    def get_body_html_content(self) -> str:
+        """
+        Returns the HTML content of the document's body.
+
+        Returns:
+            str: The HTML content of the document.
+        """
+        return "".join(component.render() for component in self._components)
+
+    def get_html(self) -> str:
         """
         Returns the HTML content of the document.
 
         Returns:
             str: The HTML content of the document.
         """
-        return "".join(component.render() for component in self.components)
+        header_content = self._header.render() if self._header else ""
+        body_content = create_block(
+            open_prefix="<body>",
+            close_suffix="</body>",
+            content=self.get_body_html_content()
+        )
+        return create_block(
+            open_prefix="<html>",
+            close_suffix="</html>",
+            content=header_content + body_content
+        )
 
     def publish(self, htlm_file_path: Path, exist_ok: bool = False):
         """
@@ -97,6 +140,7 @@ class HTMLDocument:
 
         Args:
             htlm_file_path (Path): The file path where the HTML content will be published.
+            exist_ok (bool, optional): If True, allows overwriting an existing file. Defaults to False.
 
         Raises:
             FileExistsError: If the file already exists at the specified file path.
@@ -107,53 +151,28 @@ class HTMLDocument:
             extension=ALLOWED_HTML_EXTENSIONS)
 
         # validate non existing file
-        if htlm_file_path.exists() and not exist_ok:
+        if htlm_file_path.exists() and exist_ok is False:
             raise FileExistsError(f"The file {htlm_file_path} already exists.")
 
         # create target directory
         target_directory = htlm_file_path.parent
 
-        html_content = self.get_html_content()
+        #create directory if it does not exist
+        target_directory.mkdir(parents=True, exist_ok=True)
+
+        #create the HTML block with the header and the body
+        html_content = self.get_html()
+
+        # add the doctype
+        html_content = f"<!DOCTYPE html>\n{html_content}"
+
         # write the content to the file
         htlm_file_path.write_text(html_content, encoding='utf-8')
 
         # publish additional files
-        for file in self.additional_files:
+        for file in self._additional_files:
             published_path = target_directory / file.get_published_directory() / file.get_filename()
             # copy the file
             _  = copy_file(
                 source_path=file.get_original_path(),
                 destination_path=published_path)
-
-
-#         # render the HTML document
-#         html = f"""<!DOCTYPE html>
-
-# # @attrs.define
-# # class HTMLReporter():
-# #     title: str = attrs.field(
-# #         validator=attrs.validators.instance_of(str),
-# #         metadata={'description': 'Title of the HTML page'},
-# #         kw_only=True)
-# #     content: list[HTMLComponent] = attrs.field(default=[],
-# #         metadata={'description': 'List of HTML components to be rendered'},
-# #         validator=attrs.validators.deep_iterable(
-# #             member_validator=attrs.validators.instance_of(HTMLComponent)),
-# #         kw_only=True)
-# #     additional_files: list[Path] = attrs.field(default=[],
-# #         metadata={'description': 'List of additional files to be published'},
-# #         validator=attrs.validators.deep_iterable(
-# #             member_validator=attrs.validators.instance_of(AdditionalFile)),
-# #         kw_only=True)
-# #     def render(self) -> str:
-# #         html = f"""<!DOCTYPE html>
-# # <html>
-# # <head>
-# #     <title>{self.title.upper()}</title>
-# # </head>
-# # <body>
-# # """
-# #         for component in self.content:
-# #             html += component.render()
-# #         html += """</body>
-# # </html>"""

@@ -96,20 +96,20 @@ class HTMLObject(ABC):
 
 class HTMLComponent(HTMLObject, ABC):
     """
-    Represents an HTML component.
+    Base class for HTML components.
 
-    This class is an abstract base class (ABC) that provides a common interface
+    This class represents a generic HTML component and provides common functionality
     for all HTML components.
-    Subclasses must implement the `publish_additional_files` method to publish
-    additional files required by the HTML component.
 
     Attributes:
-        None
+        _indent_value (int): The indentation value for the HTML component.
 
-    Methods:
-        publish_additional_files: Publishes additional files required by the HTML component.
+    List of Methods:
+        get_additional_files: Publishes additional files required by the HTML component.
         render: Renders the HTML component.
+
     """
+
     _indent_value: int = 4
 
     @abstractmethod
