@@ -31,7 +31,6 @@ class LinkComponent(HTMLComponent):
         kw_only=True)
 
     inline: bool = attrs.field(
-        type=bool,
         default=True, # type: ignore
         metadata={'description': 'Whether the component should be rendered inline or not'},
         validator=attrs.validators.instance_of(bool), # type: ignore

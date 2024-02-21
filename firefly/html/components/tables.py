@@ -18,6 +18,7 @@ class TableColumn():
     header: str
     data: list[HTMLComponent | str]
     alignment: Optional[Literal["left", "center", "right"]] = None
+    width_percent: Optional[int] = None
 
     def length(self) -> int:
         return len(self.data)
@@ -29,6 +30,7 @@ class TableColumn():
 class Cells():
     data : HTMLComponent
     alignment: Optional[Literal["left", "center", "right"]] = None
+    width_percent: Optional[int] = None
 
 def _create_HTML_table_row(
      row_elements: list[Cells],
@@ -42,8 +44,12 @@ def _create_HTML_table_row(
         alignement_attr = f' align="{element.alignment}"' \
             if element.alignment else ""
 
+        # create width attribute
+        width_attr = f' style="width:{element.width_percent}%"' \
+            if element.width_percent else ""
+
         # create the element
-        elements_str += f"<{balise}{alignement_attr}>\n" \
+        elements_str += f"<{balise}{alignement_attr}{width_attr}>\n" \
             f"{indent(element.data.render(),indent_value)}\n" \
             f"</{balise}>\n"
 
@@ -66,7 +72,9 @@ def _validate_table_columns(columns: list[TableColumn]) -> list[TableColumn]:
 def _extract_headers(columns: list[TableColumn]) -> list[Cells]:
     return [Cells(
         data=column.header if isinstance(column.header, HTMLComponent) else Text(column.header),
-        alignment= column.alignment)
+        alignment= column.alignment,
+        width_percent= column.width_percent
+        )
             for column in columns]
 
 def _extract_specific_elements(
@@ -90,7 +98,7 @@ class Table(HTMLComponent):
 
     Attributes:
         columns (list[TableColumn]): The columns of the table.
-        class_ (Optional[str]): The class of the table.
+        class_ (Optional[str]): The HTML class of the table for CSS.
     """
     columns: list[TableColumn] = attrs.field(
         metadata={'description': 'The columns of the table'},
@@ -126,7 +134,8 @@ class Table(HTMLComponent):
             elements = _extract_specific_elements(self.columns, idx)
             body_rows.append(_create_HTML_table_row(elements))
         body = "".join(body_rows)
-        return (f'<table{class_attr} style="width:100%">\n{indent(header_row,self._indent_value)}\n' +
+        return (f'<table{class_attr} style="width:100%">' +
+                f'\n{indent(header_row,self._indent_value)}\n' +
                 f"{indent(body,self._indent_value)}\n</table>")
 
     def get_additional_files(self) -> list[AdditionalFile]:

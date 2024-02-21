@@ -75,8 +75,8 @@ l3 = OrderedList(
     "Hello, World!3",
     options=ListOptions(type_="A"))
 
-table = Table(columns=[
-    TableColumn("Name", ["John", "Doe", "Foo"]),
+table = Table(class_="toto",columns=[
+    TableColumn("Name", ["John", "Doe", "Foo"],width_percent=90,alignment='center'),
     TableColumn("Age", ["25", "30", "40"],alignment="right"),
     TableColumn("Country", ["USA", "Canada", "France"],alignment="left")])
 

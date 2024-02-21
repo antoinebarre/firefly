@@ -3,6 +3,7 @@ from pathlib import Path
 from firefly.html.components.css_style import CSS_Style
 from firefly.html.components.link import Link
 from firefly.html.components.lists import ListOptions, OrderedList, UnorderedList
+from firefly.html.components.paragraph import Paragraph
 from firefly.html.components.span import Span, SpanOptions
 from firefly.tools.images import create_random_png
 
@@ -69,3 +70,40 @@ lk = Link(
 )
 
 print(lk.render())
+
+
+# test article
+from firefly.html.components.structure import Article
+
+a1 = Article(
+    title="My first article",
+    class_="forecast")
+a1.add_components(
+    Paragraph("Hello, World!"))
+a1.add_components(
+    Paragraph("Hello, World!"))
+
+a2 = Article(
+    title="My second article",class_="day-forecast")
+a2.add_components(
+    Paragraph("Hello, World!"))
+a2.add_components(
+    Paragraph("Hello, World!"))
+a2.add_components("sedfsflkjlsfjlksjflsjkfl\n")
+
+a3 = Article(
+    title="My third article")
+a3.add_components(
+    Paragraph("Hello, World!"))
+a3.add_components(
+    Paragraph("Hello, World!"))
+
+a2.add_components(a3)
+
+a1.add_components(a2)
+a1.add_components(
+    Paragraph("Hello, World!"))
+a1.add_components(
+    Paragraph("Hello, World!"))
+
+print(a1.render())

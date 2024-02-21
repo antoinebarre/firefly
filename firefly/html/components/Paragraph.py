@@ -7,6 +7,7 @@ import attrs
 from .generic_component import HTMLGenericComponent # pylint: disable=import-error
 from .components import AdditionalFile, HTMLComponent
 from .html_tag import HTMLOptions, HTMLTag
+from ._render_tools import create_block
 
 
 __all__ = ["Text", "Paragraph", "Basic"]
@@ -28,7 +29,11 @@ class Basic(HTMLComponent):
         kw_only=False)
 
     def render(self) -> str:
-        return self.text
+        return create_block(
+            open_prefix="",
+            content=self.text,
+            close_suffix="",
+            inline=True)
 
     def get_additional_files(self) -> list[AdditionalFile]:
         return []
@@ -96,7 +101,6 @@ def validate_HTML_children(children: list | tuple) -> list[HTMLComponent]: # pyl
                 raise TypeError("All children must be instances of HTMLComponent or str" +
                                 f"Got Invalid input: {child}, type: {type(child)}" +
                                 f", Position: {children.index(child)}")
-        raise TypeError()
 
     return [
         Basic(child) if isinstance(child, str) else child for child in children
