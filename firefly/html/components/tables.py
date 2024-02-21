@@ -214,6 +214,16 @@ class Table(HTMLComponent):
         metadata={'description': 'The width of the table as a percentage of page width'},
         kw_only=True)
 
+    center: Optional[bool] = attrs.field(
+        default=True,
+        metadata={'description': 'Center the table'},
+        kw_only=True)
+
+    legend: Optional[str] = attrs.field(
+        default=None,
+        metadata={'description': 'The legend of the table'},
+        kw_only=True)
+
     def __attrs_post_init__(self):
         self.columns = _validate_table_columns(self.columns)
 
@@ -227,13 +237,32 @@ class Table(HTMLComponent):
         # create the class attribute
         class_attr = f' class="{self.class_}"' if self.class_ else ""
 
-        # create the width attribute
-        width_attr = f' style="width:{self.width_percent}%"' if self.width_percent else ""
+        #manage style
+        style_attribute = ""
+
+        if self.center:
+            style_attribute += "margin-left:auto;margin-right:auto;"
+
+        if self.width_percent:
+            style_attribute += f"width:{self.width_percent}%;"
+
+        if style_attribute:
+            style_attribute = f' style="{style_attribute}"'
+
+        # create the legend
+        legend = create_block(
+            open_prefix="<caption>",
+            close_suffix="</caption>",
+            content=self.legend,
+            inline=False,
+            indentation_size=self._indent_value
+        ) if self.legend else ""
+
 
         # create header of the table
         headers = _extract_headers(self.columns)
         header_row = _create_HTML_table_row(headers, balise="th")
-        
+
         header_row = create_block(
             open_prefix="<thead>",
             close_suffix="</thead>",
@@ -257,9 +286,9 @@ class Table(HTMLComponent):
         )
 
         return create_block(
-            open_prefix=f"<table{class_attr}{width_attr}>",
+            open_prefix=f"<table{class_attr}{style_attribute}>",
             close_suffix="</table>",
-            content=f"{header_row}\n{body}",
+            content=f"{legend}{header_row}\n{body}",
             inline=False,
             indentation_size=self._indent_value
         )

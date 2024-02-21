@@ -11,7 +11,7 @@ from firefly.validation.fileIO import validate_file_extension
 
 from .components import AdditionalFile
 from .components._render_tools import create_block
-from .components.title import  HTMLHeader
+from .components.header import  HTMLHeader
 
 __all__ = ["HTMLDocument","HTMLComponent"]
 
@@ -80,7 +80,7 @@ class HTMLDocument:
             member_validator=attrs.validators.instance_of(AdditionalFile)),
         kw_only=True)
 
-    def add_component(self, component: HTMLComponent):
+    def add_component(self, *components: HTMLComponent):
         """
         Adds a component to the list of components and updates the additional files.
 
@@ -90,8 +90,9 @@ class HTMLDocument:
         Returns:
             None
         """
-        self._components.append(component)
-        self._additional_files.extend(component.get_additional_files())
+        for component in components:
+            self._components.append(component)
+            self._additional_files.extend(component.get_additional_files())
 
     def add_header(self, header: HTMLHeader):
         """
@@ -171,7 +172,7 @@ class HTMLDocument:
 
         # publish additional files
         for file in self._additional_files:
-            published_path = target_directory / file.get_published_directory() / file.get_filename()
+            published_path = target_directory / file.get_published_directory() / file.get_final_name()
             # copy the file
             _  = copy_file(
                 source_path=file.get_original_path(),

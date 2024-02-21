@@ -62,12 +62,21 @@ class AdditionalFile():
 
     def get_filename(self) -> str:
         """
-        Returns the name of the file associated with this object.
+        Returns the original name of the file associated with this object.
 
         Returns:
             str: The name of the file.
         """
         return self.original_path.name
+
+    def get_final_name(self) -> str:
+        """
+        Returns the final name of the file associated with this object.
+
+        Returns:
+            str: The name of the file.
+        """
+        return self.published_filename
 
     @property
     def filename(self) -> str:

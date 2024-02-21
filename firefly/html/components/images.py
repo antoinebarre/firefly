@@ -5,6 +5,7 @@ import attrs
 from firefly.tools.strings import add_unique_suffix
 from .components import AdditionalFile
 from .components import HTMLComponent
+from ._render_tools import create_block
 
 __all__ = ["Image"]
 
@@ -34,7 +35,7 @@ class Image(HTMLComponent):  # pylint: disable=invalid-name
         validator=attrs.validators.instance_of(Path),
         kw_only=True)
     alt_text: str = attrs.field(
-        metadata={'description': 'The alternative text for the image'},
+        metadata={'description': 'The alternative text for the image and legend for the image'},
         validator=attrs.validators.instance_of(str),
         kw_only=True)
     width: int = attrs.field(
@@ -52,6 +53,11 @@ class Image(HTMLComponent):  # pylint: disable=invalid-name
         validator=attrs.validators.optional(attrs.validators.instance_of(str)),
         kw_only=True,
         init=False)
+    legend: str = attrs.field(
+        default=None,
+        metadata={'description': 'The legend for the image'},
+        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+        kw_only=True)
 
     # constants
     _ImageFolder = "images"
@@ -83,9 +89,25 @@ class Image(HTMLComponent):  # pylint: disable=invalid-name
         width = f' width="{self.width}"' if self.width else ""
         height = f' height="{self.height}"' if self.height else ""
 
-        # Create the tag
-        return (f'<img src="{self._ImageFolder}/{self._unique_filename}"' +
-                f' alt="{self.alt_text}{width}{height}">')
+        # create img info
+        img_attributes =f'<img src="{self._ImageFolder}/{self._unique_filename}"' + \
+                            f' alt="{self.alt_text}"{width}{height}>'
+
+        # create figcaption info
+        figcaption = create_block(
+            open_prefix="<figcaption>",
+            close_suffix="</figcaption>",
+            content=self.legend,
+            inline=True
+        ) if self.legend else ""
+
+        # create the figure
+        return create_block(
+            open_prefix="<figure>",
+            close_suffix="</figure>",
+            content=f"{img_attributes}\n{figcaption}",
+            inline=False
+        )
 
     def get_additional_files(self) -> list[AdditionalFile]:
         """

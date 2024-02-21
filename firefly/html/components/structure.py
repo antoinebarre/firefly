@@ -1,13 +1,16 @@
 """Collection of structure components for HTML"""
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
 import warnings
 
-from firefly.html.components.components import AdditionalFile, HTMLComponent
-from firefly.html.components.paragraph import validate_HTML_children
 from firefly.tools.strings import indent
+
+from .components import AdditionalFile, HTMLComponent
 from ._render_tools import create_block
+from .paragraph import Paragraph, validate_HTML_children
+from .images import Image
 
 # TODO : change to attrs and add validators
 
@@ -33,7 +36,7 @@ class Article(HTMLComponent):
     """
     title: str
     _content: list[HTMLComponent] = field(default_factory=list, init=False)
-    _level: int = field(init=False, default=1)
+    _level: int = field(init=False, default=2)
     class_: Optional[str] = field(default=None, init=True)
 
     def set_level(self, level: int) -> None:
@@ -121,3 +124,30 @@ class Article(HTMLComponent):
             content = indent(content_str, self._indent_value),
             inline=False
         )
+
+    def add_paragraph(self, text: str) -> None:
+        """
+        Add a paragraph to the article.
+
+        Args:
+            text (str): The text of the paragraph.
+
+        Returns:
+            None
+        """
+        self._content.append(Paragraph(text))
+
+    def add_image(self, src_path: Path, alt: str) -> None:
+        """
+        Add an image to the article.
+
+        Args:
+            src-path (Path): The source of the image.
+            alt (str): The alternative text of the image.
+
+        Returns:
+            None
+        """
+        self._content.append(Image(
+            image_path=src_path,
+            alt_text=alt))

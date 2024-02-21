@@ -3,6 +3,18 @@
     font-family: sans-serif;
 }
 
+body {
+    margin-left: 20px; /* Adjust the left margin */
+    margin-right: 20px; /* Adjust the right margin */
+}
+
+
+p {
+    margin-bottom: 20px;
+    font-size: 1em;
+    text-align: justify;
+}
+
 table {
     border-collapse: collapse;
     margin: 25px 0;
@@ -39,4 +51,30 @@ tbody tr:last-of-type {
 tbody tr.active-row {
     font-weight: bold;
     color: #009879;
+}
+
+caption {
+    font-size: 0.9em;
+    font-weight: bold;
+    font-style: italic;
+    padding: 10px;
+    caption-side: bottom;
+}
+
+figure {
+    text-align: center;
+    justify-content: center;
+}
+figure img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+figure figcaption {
+    font-size: 0.9em;
+    font-weight: bold;
+    font-style: italic;
+    padding: 10px;
+    text-align: center;
 }
