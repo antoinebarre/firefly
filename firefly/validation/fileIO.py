@@ -106,6 +106,37 @@ def validate_file_extension(file_path: Path, extension: list[str]) -> Path:
         raise ValueError(f"The file extension must be one of {extension}.")
     return file_path
 
+def is_existing_file(file_path: Path) -> bool:
+    """
+    Check if the given file path exists.
+
+    Args:
+        file_path (Path): The file path to check.
+
+    Returns:
+        bool: True if the file exists, False otherwise.
+    """
+    # validate path
+    file_path = validate_path(file_path)
+
+    return file_path.is_file()
+
+def validate_existing_file(file_path: Path) -> Path:
+    """
+    Validates the existence of a file.
+
+    Args:
+        file_path (Path): The path to the file.
+
+    Returns:
+        Path: The validated file path.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+    """
+    if is_existing_file(file_path) is False:
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    return file_path
 
 def is_valid_files_extension(
     # END: be15d9bcejpp
