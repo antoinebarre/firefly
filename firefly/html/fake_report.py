@@ -16,7 +16,7 @@ from .components.structure import Article
 
 def create_fake_report(
     html_file_path: Path,
-    ) -> None:
+    ) -> HTMLDocument:
     
     # create a temporary directory
     temp_dir = tempfile.TemporaryDirectory()
@@ -35,12 +35,12 @@ def create_fake_report(
     # create the body based on article
     intro = Article(
         title="Introduction")
-    
+
     intro.add_paragraph(
         "This is a fake report created with Firefly.")
-    
+
     md.add_component(intro)
-    
+
     # create sections
     section1 = Article(
         title="Section 1")
@@ -134,5 +134,5 @@ def create_fake_report(
     
     temp_dir.cleanup()
     
-    return None
+    return md
     

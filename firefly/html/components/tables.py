@@ -301,3 +301,81 @@ class Table(HTMLComponent):
             list[AdditionalFile]: The additional files associated with the table.
         """
         return _get_additional_files(self.columns)
+
+
+class HorizontalTables(HTMLComponent):
+    """
+    Represents an horizontal HTML table.
+
+    Attributes:
+        columns (list[TableColumn]): The columns of the table.
+
+        class_ (Optional[str]): The HTML class of the table for CSS.
+
+        width_percent (Optional[int]): The width of the table as a percentage
+        of page width.
+    """
+    columns: list[TableColumn] = attrs.field(
+        metadata={'description': 'The columns of the table'},
+        validator=attrs.validators.deep_iterable(
+            member_validator=attrs.validators.instance_of(TableColumn)),
+        kw_only=True)
+    class_ : Optional[str] = attrs.field(
+        default=None,
+        validator=attrs.validators.optional(attrs.validators.instance_of(str)),
+        metadata={'description': 'The class of the table'},
+        kw_only=True)
+
+    width_percent: Optional[int] = attrs.field(
+        default=80, # type: ignore
+        validator=[attrs.validators.optional(attrs.validators.instance_of(int)), # type: ignore
+                   attrs.validators.optional(attrs.validators.in_(range(1, 101)))], # type: ignore
+        metadata={'description': 'The width of the table as a percentage of page width'},
+        kw_only=True)
+
+    center: Optional[bool] = attrs.field(
+        default=True,
+        metadata={'description': 'Center the table'},
+        kw_only=True)
+
+    legend: Optional[str] = attrs.field(
+        default=None,
+        metadata={'description': 'The legend of the table'},
+        kw_only=True)
+
+    def __attrs_post_init__(self):
+        self.columns = _validate_table_columns(self.columns)
+
+    def render(self) -> str:
+        """
+        Renders the HTML representation of the table.
+
+        Returns:
+            str: The HTML representation of the table.
+        """
+        # create the class attribute
+        class_attr = f' class="{self.class_}"' if self.class_ else ""
+
+        #manage style
+        style_attribute = ""
+
+        if self.center:
+            style_attribute += "margin-left:auto;margin-right:auto;"
+
+        if self.width_percent:
+            style_attribute += f"width:{self.width_percent}%;"
+
+        if style_attribute:
+            style_attribute = f' style="{style_attribute}"'
+
+        # create the legend
+        legend = create_block(
+            open_prefix="<caption>",
+            close_suffix="</caption>",
+            content=self.legend,
+            inline=False,
+            indentation_size=self._indent_value
+        ) if self.legend else ""
+
+
+        # create

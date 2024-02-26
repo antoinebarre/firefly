@@ -23,6 +23,7 @@ markdown = "^3.5.2"
 dash = "^2.15.0"
 attrs = "^23.2.0"
 pillow = "^10.2.0"
+beautifulsoup4 = "^4.12.3"
 
 
 [tool.poetry.group.dev.dependencies]
