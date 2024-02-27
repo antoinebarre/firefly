@@ -1,8 +1,9 @@
 
 
-import re
 import shutil
+from firefly.html.components.toc import TableofContent
 from firefly.html.fake_report import create_fake_report
+from bs4 import BeautifulSoup
 from pathlib import Path
 
 working_dir = Path("work/temp")
@@ -12,20 +13,12 @@ if working_dir.exists():
 
 a=create_fake_report(working_dir / "fake_report.html")
 
-from firefly.html.toc import Toc
+toc = TableofContent(content=a.get_html())
 
-tt = Toc(html_in=a.get_html())
+new_html = toc.render()
 
-tt.make_toc()
+# write the new html to a file
+with open(working_dir / "fake_report_with_toc.html", "w",encoding="utf-8") as file:
+    file.write(new_html)
 
-print(tt.html_toc)
 
-from bs4 import BeautifulSoup
-from pathlib import Path
-
-Soup = BeautifulSoup(a.get_html(), 'html.parser')
-
-heading_tags = ["h1", "h2", "h3"]
-for tags in Soup.find_all(heading_tags):
-    print(tags.name + ' -> ' + tags.text.strip())
-    print(tags.get('id'))

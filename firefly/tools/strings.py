@@ -26,6 +26,15 @@ def generate_random_string(length_str: int) -> str:
     return ''.join(
         random.choice(string.ascii_letters + string.digits)
         for _ in range(length_str))
+    
+def generate_unique_id() -> str:
+    """
+    Generate a unique identifier.
+
+    Returns:
+        str: A unique identifier.
+    """
+    return str(time.perf_counter()).replace('.', '')
 
 def add_unique_suffix(str2modify: str) -> str:
     """

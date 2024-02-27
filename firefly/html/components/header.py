@@ -183,5 +183,3 @@ def myCSSStyleSheet():
     with pkg_resources.path("firefly.html.templates", "report.css") as css_path:
         # css_path is a Path object that can be used within this block
         return CSSStyleSheet(css_file_path=Path(css_path))
-    
-    
